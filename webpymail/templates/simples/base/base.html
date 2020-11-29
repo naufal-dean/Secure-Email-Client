@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>{% load loader_tags %}{% load i18n %}
+<html>
+<head>
+    <title>{% block title %}{% trans "WebPyMail" %}{% endblock %}</title>
+    <link href="{{ STATIC_URL }}simples/css/style.css" rel="stylesheet" type="text/css"></link>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    {% block headercontent %}{% endblock %}
+</head>
+<body>
+<div id="application">
+<div id="navheader">
+  <div class="left">
+    {% block prev_section %} {% endblock %}
+  </div>
+  <div class="right">
+    {% block next_section %} {% endblock %}
+  </div> 
+  <div class="middle">
+     {% block cur_section %} {% endblock %}
+  </div>
+  <div class="clearall"></div>
+</div>
+
+<!-- The Main Body -->
+<div id="contents">
+  {% block contents %}{% endblock %}
+</div>
+
+<!-- Footer -->
+<div id="navfooter">
+  <div class="left">
+    {% block prev_section_f %} {% endblock %}
+  </div>
+  <div class="right">
+    {% block next_section_f %}{% endblock %}
+  </div> 
+  <div class="middle">
+     {% block cur_section_f %} {% endblock %}
+  </div>
+  <div class="clearall"></div>
+</div>
+</div>
+<div id="footer">
+    {% block footer %}{% trans "✉ WebPyMail SVN - Simples theme ✉" %}{% endblock %}
+</div>
+
+{% block endscripts %}{% endblock %}
+</body>
+</html>

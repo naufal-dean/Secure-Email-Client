@@ -1,0 +1,16 @@
+{%load loader_tags %}{% extends "base/base.html" %}
+{% load i18n %}
+{% load webtags %}
+
+{% block inpage_title %}{% trans "Folder List" %}{% endblock %}
+
+{% block headercontent %}
+{% endblock %}
+
+{% block contents %}
+<table>{% for folder in server %}
+<tr class="{% cycle 'row_a' 'row_b' %}">
+<td>{% spaces folder.level %}{% if folder.has_children %}{% if folder.expanded %}<a href="{% url 'set_folder_collapse' folder.url %}">-</a>&nbsp;{% else %}<a href="{% url 'set_folder_expand' folder.url %}">+</a>&nbsp;{% endif %}{% endif %}{% if folder.noselect %}{{ folder.unicode_name }}</td><td></td><td></td>{% else %}<a href="{% url 'message_list' folder.url %}">{{ folder.unicode_name }}</a></td><td>{{ folder.unseen }}</td><td>{{ folder.messages }}</td>{% endif %}
+</tr>{% endfor %}
+</table>
+{% endblock %}

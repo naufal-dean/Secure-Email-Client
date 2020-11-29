@@ -1,0 +1,28 @@
+{%load loader_tags %}{% extends "base/base.html" %}
+{% load i18n %}
+{% load webtags %}
+
+
+{% block cur_section %} 
+{{ address }}
+{% endblock %}
+
+{% block cur_section_f %} 
+{{ address }}
+{% endblock %}
+
+{% block prev_section_f %}
+<a class="boxed" href="{% url 'logout' %}">{% trans "Sign out" %}</a>
+{% endblock %}
+
+{% block contents %}
+  <div id="folder_list">
+    {% for folder in server %}
+    <p>{% spaces folder.level %}{% if folder.has_children %}{% if folder.expanded %}<a href="{% url 'set_folder_collapse' folder.url %}">-</a>&nbsp;{% else %}<a href="{% url 'set_folder_expand' folder.url %}">+</a>&nbsp;{% endif %}{% endif %}
+      {% if folder.noselect %}{{ folder.unicode_name }}
+      {% else %}
+        <a href="{% url 'message_list' folder.url %}">{{ folder.unicode_name }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}

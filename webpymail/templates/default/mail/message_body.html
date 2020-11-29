@@ -1,0 +1,157 @@
+{% load loader_tags %}{% extends "base/base.html" %}
+{% load i18n %}
+{% load mailtags %}
+{% load addresstags %}
+
+{% block headercontent %}
+    <link href="{{ STATIC_URL }}css/message.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block inpage_title %}{% trans "Message" %}{% endblock %}
+
+{% block extra_menus %}
+<a href="{% url 'mailapp_reply_message' folder=message.folder.url uid=message.uid %}" title="{% trans "Reply" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-reply-sender.svg" width="32px" height="32px">
+</a>
+<a href="{% url 'mailapp_reply_all_message' folder=message.folder.url uid=message.uid %}" title="{% trans "Reply All" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-reply-all.svg" width="32px" height="32px">
+</a>
+<a href="{% url 'mailapp_forward_inline_message' folder=message.folder.url uid=message.uid %}" title="{% trans "Forward" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-forward.svg" width="32px" height="32px">
+</a>
+<a href="{% url 'mailapp_forward_message' folder=message.folder.url uid=message.uid %}" title="{% trans "Forward as Attachment" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-forward-attachment.svg" width="32px" height="32px">
+</a>
+
+&nbsp;&nbsp;
+<a href="{% url 'folder_list' %}" title="{% trans "Folder List" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px">
+</a>
+<a href="{% url 'message_list' folder.url %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new-list.svg" width="32px" height="32px" title="{% trans "Message List" %}"></a>
+&nbsp;
+<a href="{% url 'mailapp_send_message' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}"></a>
+{% endblock %}
+
+{% block main_menu %}
+  {# Message information #}
+  <li><a href="{% url 'mailapp_message_header' folder=message.folder.url uid=message.uid %}">{% trans "Message Header" %}</a>
+  <li><a href="{% url 'mailapp_message_structure' folder=message.folder.url uid=message.uid %}">{% trans "Message Structure" %}</a>
+  <li></li><a href="{% url 'mailapp_message_source' folder=message.folder.url uid=message.uid %}">{% trans "Message Source" %}</a>
+<li><hr></li>
+{% endblock %}
+
+{% block contents %}
+<div class="message">
+  {# Message header #}
+  {% with message=message uid=message.uid %}
+  {% include "mail/message_show_header.html" %}
+  {% endwith %}
+
+  <div class="message_body">
+  {% for part in message.bodystructure.serial_message %}
+      {# Text message part #}
+      {% if part.parent %}
+        {% if part.parent.is_alternative %}
+          {% if not part.parent.has_html %}
+            {% include "mail/show_text_media.html" %}
+          {% else %}
+            {% if part.is_html and show_html %}
+              {% include "mail/show_text_media.html" %}
+            {% endif %}
+            {% if part.is_plain and not show_html %}
+              {% include "mail/show_text_media.html" %}
+            {% endif %}
+          {% endif %}
+        {% else %}
+          {% include "mail/show_text_media.html" %}
+        {% endif %}
+      {% else %}
+        {% include "mail/show_text_media.html" %}
+      {% endif %}
+
+      {# Encapsulated message #}
+      {% if part.is_encapsulated %}
+          {% if part.is_start %}
+            <div class="enc_message">
+              <div class="enc_msg_title">
+                {% trans "Encapsuplated Message" %}
+              </div>
+              {% with message=part uid=message.uid %}
+              {% include "mail/message_show_header.html" %}
+              {% endwith %}
+              <div class="message_body">
+          {% else %}
+              </div> <!-- message_body (encapsulated) -->
+            </div> <!-- enc_message -->
+          {% endif %}
+      {% endif %}
+
+      {# Attachments #}
+      {% if part.is_attachment and not part.is_encapsulated %}
+        {% if show_images_inline and part.media == "IMAGE" %}
+          <p>
+            <img src="{% url 'mailapp_mpart_inline' folder=folder.url uid=message.uid part_number=part.part_number %}" width="750"><br>
+            <a href="{% url 'mailapp_message_part' folder=folder.url uid=message.uid part_number=part.part_number %}">{% trans "Download" %}{% if part.filename %} {{ part.filename }}{% endif %}</a>
+          </p>
+        {% else %}
+          <div class="attach_link">
+          <table>
+              <tr>
+                  <th>{% trans "Part number:" %}</th>
+                  <td>{{ part.part_number }}</td>
+              </tr>
+              {% if part.body_fld_id %}
+              <tr>
+                  <th>{% trans "Id:" %}</th>
+                  <td>{% trans "this attachment has a uniq ID" %}</td>
+              </tr>
+              {% endif %}
+              <tr>
+                  <th>{% trans "Mime type:" %}</th>
+                  <td>{{ part.media }}/{{part.media_subtype}}</td>
+              </tr>
+              <tr>
+                  <th>{% trans "File Name:" %}</th>
+                  <td>{% if part.filename %}{{ part.filename }}{% else %}{% trans "Unknown" %}{% endif %}</td>
+              </tr>
+              {% if part.body_fld_desc %}
+              <tr>
+                  <th>{% trans "Description:" %}</th>
+                  <td>{{ part.body_fld_desc }}</td>
+              </tr>
+              {% endif %}
+              <tr>
+                  <th>{% trans "Size:" %}</th>
+                  <td>{{ part.body_fld_octets|filesizeformat }}</td>
+              </tr>
+              <tr>
+                  <th colspan=2>
+                    <a href="{% url 'mailapp_mpart_inline' folder=folder.url uid=message.uid part_number=part.part_number %}">{% trans "View on-line" %}</a> |
+                    <a href="{% url 'mailapp_message_part' folder=folder.url uid=message.uid part_number=part.part_number %}">{% trans "Download" %}</a>
+                  </th>
+              </tr>
+          </table>
+          </div>
+        {% endif %}
+      {% endif %} {# part.is_attachment and not part.is_encapsulated #}
+  {% endfor %}
+
+  </div> <!-- message_body -->
+</div> <!-- message -->
+
+
+<div id="bottom_toolbar">
+  <div class="toolbar_right">
+    {# Delete message #}
+    <form method="post" action="{% url 'mailapp-message' folder=message.folder.url uid=message.uid %}">
+        {% csrf_token %}
+        {% if message.deleted %}
+            <input type="submit" name="undelete" value="{% trans "Undelete" %}" />
+        {% else %}
+            <input type="submit" name="delete" value="{% trans "Delete" %}" />
+        {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}

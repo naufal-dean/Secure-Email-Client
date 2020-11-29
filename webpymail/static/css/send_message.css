@@ -1,0 +1,35 @@
+div.helptext {
+    font-size: 0.5em;
+    color: darkgrey;
+}
+
+ul.errorlist {
+    font-size: 0.5em;
+    color: red;
+    padding: 0;
+}
+
+table.msg_form {
+    background-color: #eeeee6;
+    padding: 0.3em;
+    border: 1px solid darkgray;
+    width: 100%;
+}
+
+#server_error {
+    border: 1px solid red;
+    background-color: #ffe0e0;
+    margin-bottom: 0.5em;
+    
+}
+
+#server_error h1 {
+    font-size: 1em;
+    background-color: #ffe0e0;
+    color: red;
+}
+#server_error p {
+    padding: 0;
+    padding-left: 2em;
+    font-size: 0.8em;
+}

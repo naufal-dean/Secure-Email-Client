@@ -1,0 +1,239 @@
+{% load loader_tags %}{% extends "base/base.html" %}
+{% load i18n %}
+{% load mailtags %}
+{% load addresstags %}
+
+{% block headercontent %}
+    <script type="text/javascript" src="{{ STATIC_URL }}simples/js/message_view.js"></script>
+{% endblock %}
+
+{% block prev_section %}
+    <a class="boxed" href="{% url 'message_list' folder.url %}">{{ folder }}</a>
+{% endblock %}
+
+{% block prev_section_f %}
+    <a class="boxed" href="{% url 'message_list' folder.url %}">{{ folder.unicode_name }}</a>
+{% endblock %}
+
+{% block contents %}
+
+{# Message header #}
+
+<div class="message">
+  <div class="subject{% if message.deleted %} msgdeleted{% endif %}">
+    <div class="float_right">
+       <a id="show_details" href="">{% trans "Show details"%}</a>
+    </div>
+    {% if message.envelope.env_subject %}
+      {{ message.envelope.env_subject }}
+    {% else %}
+      {% trans "(No subject)" %}
+    {% endif %}
+  </div>
+
+<div class="fields" id="msg_details">
+  <table>
+      {% if message.envelope.env_from %}
+      <tr>
+      <th>{% trans "From:" %}</th>
+      <td>{% for addr in message.envelope.env_from %}
+          {{addr.0}} &lt;{{addr.1}}&gt;&nbsp;
+          {% ifhasaddr addr %}
+            <img src="{{ STATIC_URL }}img/star_yellow.png" width=16 height=16 alt="Bookmarked">
+          {% else %}
+            <a href="{% url 'add_address' %}?{% if addr.0 %}first_name={{addr.0|first_name}}&last_name={{addr.0|last_name}}&{% endif %}email={{addr.1}}&next={% url 'mailapp-message' folder=folder.url uid=message.uid %}">
+              <img src="{{ STATIC_URL }}img/star_empty.png" width=16 height=16 alt="Not bookmarked">
+            </a>
+          {% endifhasaddr %}
+      {% endfor %}</td>
+      </tr>
+      {% endif %}
+
+      {% if message.envelope.env_to %}
+      <tr>
+      <th>{% trans "To:" %}</th>
+      <td>{% for addr in message.envelope.env_to %}
+          {{addr.0}} &lt;{{addr.1}}&gt;&nbsp;
+          {% ifhasaddr addr %}
+            <img src="{{ STATIC_URL }}img/star_yellow.png" width=16 height=16 alt="Bookmarked">
+          {% else %}
+            <a href="{% url 'add_address' %}?{% if addr.0 %}first_name={{addr.0|first_name}}&last_name={{addr.0|last_name}}&{% endif %}email={{addr.1}}&next={% url 'mailapp-message' folder=folder.url uid=message.uid %}">
+              <img src="{{ STATIC_URL }}img/star_empty.png" width=16 height=16 alt="Not bookmarked">
+            </a>
+          {% endifhasaddr %}
+      {% endfor %}</td>
+      </tr>
+      {% endif %}
+
+      {% if message.envelope.env_cc %}
+      <tr>
+      <th>{% trans "Cc:" %}</th>
+      <td>{% for addr in message.envelope.env_cc %}
+          {{addr.0}} &lt;{{addr.1}}&gt;&nbsp;
+          {% ifhasaddr addr %}
+            <img src="{{ STATIC_URL }}img/star_yellow.png" width=16 height=16 alt="Bookmarked">
+          {% else %}
+            <a href="{% url 'add_address' %}?{% if addr.0 %}first_name={{addr.0|first_name}}&last_name={{addr.0|last_name}}&{% endif %}email={{addr.1}}&next={% url 'mailapp-message' folder=folder.url uid=message.uid %}">
+              <img src="{{ STATIC_URL }}img/star_empty.png" width=16 height=16 alt="Not bookmarked">
+            </a>
+          {% endifhasaddr %}
+      {% endfor %}</td>
+      </tr>
+      {% endif %}
+
+      {% if message.envelope.env_bcc %}
+      <tr>
+      <th>{% trans "Cc:" %}</th>
+      <td>{% for addr in message.envelope.env_bcc %}
+          {{addr.0}} &lt;{{addr.1}}&gt;&nbsp;
+          {% ifhasaddr addr %}
+            <img src="{{ STATIC_URL }}img/star_yellow.png" width=16 height=16 alt="Bookmarked">
+          {% else %}
+            <a href="{% url 'add_address' %}?{% if addr.0 %}first_name={{addr.0|first_name}}&last_name={{addr.0|last_name}}&{% endif %}email={{addr.1}}&next={% url 'mailapp-message' folder=folder.url uid=message.uid %}">
+              <img src="{{ STATIC_URL }}img/star_empty.png" width=16 height=16 alt="Not bookmarked">
+            </a>
+          {% endifhasaddr %}
+      {% endfor %}</td>
+      </tr>
+      {% endif %}
+
+      {% if message.envelope.env_date %}
+      <tr>
+      <th>{% trans "Date:" %}</th>
+      <td>{{ message.envelope.env_date }}</td>
+      </tr>
+      {% endif %}
+  </table>
+</div> <!-- header fields end -->
+<hr id="details_hr">
+{# End Message Header #}
+
+<div class="message_body">
+
+{% for part in message.bodystructure.serial_message %}
+    {% if part.is_text and not part.is_attachment %} {# Show the message body #}
+      {% if part.is_plain %}
+        <pre>{% part_text message part "Plain" %}</pre>
+      {% endif %}
+    {% endif %}
+
+    {% if part.is_encapsulated %} {# Show encapsulated messages #}
+        {% if part.is_start %}
+          <div class="enc_message">
+            <div class="enc_msg_title">{% trans "Encapsuplated Message" %}</div>
+            <div class="subject">
+              {% if part.envelope.env_subject %}{{ part.envelope.env_subject }}{% else %}{% trans "(No subject)" %}{% endif %}
+            </div>
+            <div class="fields">
+              <table>
+                  {% if part.envelope.env_from %}
+                  <tr>
+                  <th>{% trans "From:" %}</th>
+                  <td>{% for addr in part.envelope.env_from %}
+                      {{addr.0}} &lt;{{addr.1}}&gt;&nbsp;
+                  {% endfor %}</td>
+                  </tr>
+                  {% endif %}
+
+                  {% if part.envelope.env_to %}
+                  <tr>
+                  <th>{% trans "To:" %}</th>
+                  <td>{% for addr in part.envelope.env_to %}
+                      {{addr.0}} &lt;{{addr.1}}&gt;&nbsp;
+                  {% endfor %}</td>
+                  </tr>
+                  {% endif %}
+
+                  {% if part.envelope.env_cc %}
+                  <tr>
+                  <th>{% trans "Cc:" %}</th>
+                  <td>{% for addr in part.envelope.env_cc %}
+                      {{addr.0}} &lt;{{addr.1}}&gt;&nbsp;
+                  {% endfor %}</td>
+                  </tr>
+                  {% endif %}
+
+                  {% if part.envelope.env_bcc %}
+                  <tr>
+                  <th>{% trans "Cc:" %}</th>
+                  <td>{% for addr in part.envelope.env_bcc %}
+                      {{addr.0}} &lt;{{addr.1}}&gt;&nbsp;
+                  {% endfor %}</td>
+                  </tr>
+                  {% endif %}
+
+                  {% if part.envelope.env_date %}
+                  <tr>
+                  <th>{% trans "Date:" %}</th>
+                  <td>{{ part.envelope.env_date }}</td>
+                  </tr>
+                  {% endif %}
+              </table>
+            </div>
+            <div class="message_body">
+        {% else %}
+      </div> {# End encapsulated message body #}
+          </div> {# End encapsulated message #}
+        {% endif %}
+    {% endif %} {# End of embeded message #}
+
+    {% if part.is_attachment and not part.is_encapsulated %} {# Attachment handling #}
+    {% if inline_img and part.media == "IMAGE" %} {# Show inlined images #}
+        <p>
+          <img src="{% url 'mailapp_mpart_inline' folder=folder.url uid=message.uid part_number=part.part_number %}" width="750"><br>
+          <a href="{% url 'mailapp_message_part' folder=folder.url uid=message.uid part_number=part.part_number %}">{% trans "Download" %}{% if part.filename %} {{ part.filename }}{% endif %}</a>
+        </p>
+      {% else %}
+        <div class="attach_link">
+          <table>
+              <tr>
+                <td rowspan="4">
+                  <img src="{{ STATIC_URL }}simples/img/mail-attachment.png" width=60px height=60px alt="{% trans "Attachment" %}">
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="{% url 'mailapp_message_part' folder=folder.url uid=message.uid part_number=part.part_number %}">{% if part.filename %}{{ part.filename }}{% else %}{% trans "Unknown.dat" %}{% endif %}</a>
+                </td>
+              </tr>
+              <tr>
+                  <td>({{ part.body_fld_octets|filesizeformat }})</td>
+              </tr>
+              <tr>
+                  <td>
+                    {% if part.media == "IMAGE" %}
+                    <a href="{% url 'mailapp_mpart_inline' folder=folder.url uid=message.uid part_number=part.part_number %}">{% trans "View on-line" %}</a>
+                    {% endif %}
+                  </td>
+              </tr>
+              {% if part.body_fld_desc %}
+              <tr>
+                  <td colspan="2">{{ part.body_fld_desc }}</td>
+              </tr>
+              {% endif %}
+          </table>
+        </div>
+      {% endif %}
+    {% endif %} {# part.is_attachment and not part.is_encapsulated #}
+{% endfor %}
+
+</div>
+</div>
+
+<div id="sub_menu">
+    <div class="float_right">
+      <form method="post" action="{% url 'mailapp-message' folder=message.folder.url uid=message.uid %}">
+        {% csrf_token %}
+        {% if message.deleted %}
+            <input type="submit" name="undelete" value="{% trans "Undelete" %}" />
+        {% else %}
+            <input type="submit" name="delete" value="{% trans "Delete" %}" />
+        {% endif %}
+      </form>
+    </div>
+    <a href="{% url 'mailapp_reply_message' folder=message.folder.url uid=message.uid %}">↺{% trans "Reply" %}</a>
+    <a href="{% url 'mailapp_reply_all_message' folder=message.folder.url uid=message.uid %}">↺↺{% trans "Reply All" %}</a>
+    <a href="{% url 'mailapp_forward_inline_message' folder=message.folder.url uid=message.uid %}">→{% trans "Forward" %}</a>
+    <a href="{% url 'mailapp_forward_message' folder=message.folder.url uid=message.uid %}">→{% trans "Forward as Attachment" %}</a>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% load loader_tags %}{% extends 'base/base.html' %}
+{% load i18n %}
+{% load webtags %}
+
+{% block inpage_title %}{{ folder }}{% endblock %}
+
+{% block headercontent %}
+<link href="{{ STATIC_URL }}css/message_list.css" rel="stylesheet" type="text/css"></link>
+{% endblock %}
+
+{% block extra_menus %}
+<a href="{% url 'folder_list' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px" title="{% trans "Folder List" %}"></a>
+<a href="{% url 'mailapp_send_message' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}"></a>
+&nbsp;
+{% if folder.have_messages %}
+<img id="tools_menu_toggle" class="menu_button" src="{{ STATIC_URL }}img/tools.svg" width="32px" height="32px" title="{% trans "Message list tools menu" %}">
+{% endif %}
+<img id="filter_menu_toggle" class="menu_button" src="{{ STATIC_URL }}img/view-filter.svg" width="32px" height="32px" title="{% trans "Message list filter menu" %}">
+{% endblock %}
+
+{% block contents %}
+<div id="filter_menu" class="menu_dropdown">
+  <table>
+    <tr>
+        <th>{% trans "Tags:" %}</th>
+        <td colspan=4>
+          <div class="tag_list">
+          {% for flag in folder.flags.keywords %}
+            <a href="{% url 'message_list' folder.url %}?flag={{ flag }}">{{ flag }}</a>
+          {% endfor %}
+          </div>
+        </td>
+        <td><a href="{% url 'message_list' folder.url %}">{% trans "No Filter"%}</a></td>
+    </tr>
+   <tr>
+      <th>{% trans "Show style:" %}</th>
+      <th colspan=4>{% trans "Sort order:" %}</th>
+      <th>{% trans "Sort:" %}</th>
+    </tr>
+    <tr>
+      <td><a href="{% queryupdate query show_style="sorted" %}">{% trans "Sorted" %}</a></td>
+      <td><a href="{% queryupdate query sort_order="arrival" %}">{% trans "Arrival" %}</a></td>
+      <td><a href="{% queryupdate query sort_order="date" %}">{% trans "Date" %}</a></td>
+      <td><a href="{% queryupdate query sort_order="subject" %}">{% trans "Subject" %}</a></td>
+      <td><a href="{% queryupdate query sort_order="size" %}">{% trans "Size" %}</a></td>
+      <td><a href="{% queryupdate query sort="ascending" %}">{% trans "Ascending" %}</a></td>
+    </tr>
+    <tr>
+      <td><a href="{% queryupdate query show_style="threaded" %}">{% trans "Threaded" %}</a></td>
+      <td><a href="{% queryupdate query sort_order="to" %}">{% trans "To" %}</a></td>
+      <td><a href="{% queryupdate query sort_order="from" %}">{% trans "From" %}</a></td>
+      <td><a href="{% queryupdate query sort_order="cc" %}">{% trans "Cc" %}</a></td>
+      <td></td>
+      <td><a href="{% queryupdate query sort="descending" %}">{% trans "Descending" %}</a></td>
+    </tr>
+  </table>
+</div>
+
+
+{% if folder.have_messages %}
+<form method="post" action="{% url 'message_list' folder.url %}{% queryupdate query %}">
+{% csrf_token %}
+
+<div id="tools_menu" class="menu_dropdown">
+  Mark messages:
+  {{ form.action }}
+  <input type="submit" name="apply" value="{% trans "Apply" %}"><br>
+  {{ form.folder }}
+  <input type="submit" name="move" value="{% trans "Move" %}">
+  <input type="submit" name="copy" value="{% trans "Copy" %}">
+</div>
+
+{% include "mail/inc_page_nav.html" %}
+
+<div class="message_list">
+{% for message in folder %}
+  <div class="{% cycle 'row_a' 'row_b' %}" style="margin-left:{{ message.level }}em;">
+    <div class="message">
+      <div class="date">{{ message.envelope.env_date|date:"Y.m.d H:i" }}</div>
+      <div class={% if message.seen %}"seen"{% else %}"not_seen"{% endif %}>
+      {% if message.deleted %}<div class="deleted">{% endif %}
+      <p><input type="checkbox" name="messages" value="{{message.uid }}">
+         <a href="{% url 'mailapp-message' folder=folder.url uid=message.uid %}">
+          {% if message.envelope.env_subject %}{{ message.envelope.env_subject }}
+          {% else %}{% trans "(No subject)" %}{% endif %}</a></p>
+      </div>
+      {% if message.deleted %}</div>{% endif %}
+      <div class="date">{% trans "Size" %}: {{ message.size|filesizeformat }}</div>
+      <p>{% trans "From" %}: {{ message.envelope.from_short|join:", " }}</p>
+      <p>{% trans "To" %}: {{ message.envelope.to_short|join:", " }}</p>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% include "mail/inc_page_nav.html" %}
+<div id="bottom_toolbar">
+  <div class="toolbar_right">
+    {% trans "This will delete PERMANENTLY the messages marked 'delete': " %}
+    <input type="submit" name="expunge" value="{% trans "Expunge" %}" />
+  </div>
+</div>
+
+{% else %}<p>{% trans "Sorry. There are no messages on the current folder." %} - ({{ folder }}){% endif %}
+
+</form>
+
+{% endblock %}

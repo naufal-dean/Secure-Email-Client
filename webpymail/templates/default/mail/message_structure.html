@@ -1,0 +1,63 @@
+{% load loader_tags %}{% extends "base/base.html" %}
+{% load i18n %}
+{% load mailtags %}
+
+
+{% block headercontent %}
+<link href="{{ STATIC_URL }}css/message.css" rel="stylesheet" type="text/css"></link>
+{% endblock %}
+
+{% block inpage_title %}{% trans "Message Header" %}{% endblock %}
+
+{% block extra_menus %}
+<a href="{% url 'folder_list' %}" title="{% trans "Folder List" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px">
+</a>
+<a href="{% url 'message_list' folder.url %}" title="{% trans "Message List" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new-list.svg" width="32px" height="32px">
+</a>
+<a href="{% url 'mailapp-message' folder=folder.url uid=message.uid %}" title="{% trans "Return to the message" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-mark-unread.svg" width="32px" height="32px">
+</a>
+{% endblock %}
+
+{% block main_menu %}
+  <li><a href="{% url 'mailapp-message' folder=folder.url uid=message.uid %}" title="{% trans "Return to the message" %}">{% trans "Message" %}</a></li>
+  {# Message information #}
+  <li><a href="{% url 'mailapp_message_header' folder=message.folder.url uid=message.uid %}">{% trans "Message Header" %}</a>
+  <li></li><a href="{% url 'mailapp_message_source' folder=message.folder.url uid=message.uid %}">{% trans "Message Source" %}</a>
+<li><hr></li>
+{% endblock %}
+
+{% block contents %}
+<div class="message">
+<div class="subject">
+{% trans "Message Structure" %}
+</div><pre>
+<table>
+  <tr>
+    <th>Number</th>
+    <th>Media</th>
+    <th>Is text?</th>
+    <th>Is basic?</th>
+    <th>Is multipart?</th>
+    <th>Is encapsulated?</th>
+    <th>Is attachment?</th>
+    <th>Charset</th>
+  </tr>
+{% for part in message.bodystructure.serial_message %}
+  <tr>
+    <td>{% if part.part_number %}{{ part.part_number }}{% endif %}</td>
+    <td>{{ part.media }}/{{ part.media_subtype }}</td>
+    <td>{{ part.is_text }}</td>
+    <td>{{ part.is_basic }}</td>
+    <td>{{ part.is_multipart }}</td>
+    <td>{{ part.is_encapsulated }}</td>
+    <td>{{ part.is_attachment }}</td>
+    <td>{{ part.charset }}</td>
+  </tr>
+  {# {{ message.bodystructure.represent }} #}
+{% endfor %}
+</table>
+</pre></div>
+{% endblock %}

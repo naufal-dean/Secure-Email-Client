@@ -1,0 +1,66 @@
+{%load loader_tags %}{% extends 'base/base.html' %}
+{% load i18n %}
+
+{% block prev_section %}
+    <a class="boxed" href="{% url 'folder_list' %}">{% trans "Folder List" %}</a>
+{% endblock %}
+
+{% block cur_section %}
+    {{ folder }}
+{% endblock %}
+
+{% block next_section %}
+    <a class="boxed" href="{% url 'mailapp_send_message' %}">{% trans "Compose" %}</a>
+{% endblock %}
+
+{% block cur_section_f %}
+{{ address }}
+{% endblock %}
+
+{% block prev_section_f %}
+<a class="boxed" href="{% url 'logout' %}">{% trans "Sign out" %}</a>
+{% endblock %}
+
+{% block contents %}
+  {% if folder.have_messages %}
+
+    <form method="post" action="{% url 'message_list' folder.url %}">
+    {% csrf_token %}
+    <div class="message_actions">
+      {{ form.action }}
+      <input type="submit" name="apply" value="{% trans "Apply" %}"> |
+      {{ form.folder }}
+      <input type="submit" name="move" value="{% trans "Move" %}">
+      <input type="submit" name="copy" value="{% trans "Copy" %}">
+    </div>
+
+    <div class="message_list">
+      {% include "mail/pagination.html" %}
+      <hr>
+      {% for message in folder %}
+          <div class="{% cycle 'row_a' 'row_b' %}">
+            <div class="message_header">
+              <div class="date">{{ message.envelope.env_date|date:"Y.m.d H:i" }}</div>
+              <div class={% if message.seen %}"seen"{% else %}"not_seen"{% endif %}>
+                {% if message.deleted %}<div class="deleted">{% endif %}
+                <p><input type="checkbox" name="messages" value="{{message.uid }}">
+                  <a href="{% url 'mailapp-message' folder=folder.url uid=message.uid %}">{% if message.envelope.env_subject %}{{ message.envelope.env_subject }}{% else %}{% trans "(No subject)" %}{% endif %}</a></p>
+              </div>
+                {% if message.deleted %}</div>{% endif %}
+              <div class="date">{% trans "Size" %}: {{ message.size|filesizeformat }}</div>
+              <p>{% trans "From" %}: {{ message.envelope.from_short|join:", " }}</p>
+              <p>{% trans "To" %}: {{ message.envelope.to_short|join:", " }}</p>
+            </div>
+          </div>
+      {% endfor %}
+      <hr>
+      {% include "mail/pagination.html" %}
+    </div> {# End Message list #}
+
+    <p>{% trans "This will delete PERMANENTLY the messages marked 'delete': " %}
+    <input type="submit" name="expunge" value="{% trans "Expunge" %}" />
+    </form>
+  {% else %}
+    <p>{% trans "Sorry. There are no messages on the current folder." %} - ({{ folder }})
+  {% endif %}
+{% endblock %}
