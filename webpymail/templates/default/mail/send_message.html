@@ -1,0 +1,46 @@
+{% load loader_tags %}{% extends "base/base.html" %}
+{% load i18n %}
+
+{% block inpage_title %}{{ page_title }}{% endblock %}
+
+{% block headercontent %}
+<link href="{{ STATIC_URL }}css/send_message.css" rel="stylesheet" type="text/css"></link>
+{% endblock %}
+
+{% block extra_menus %}
+<a href="{% url 'folder_list' %}" title="{% trans "Folder List" %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px">
+</a>
+{% endblock %}
+
+
+{% block contents %}
+
+{% if server_error %}
+<div id="server_error">
+<h1>{% trans "Message not sent. Server replied:" %}</h1>
+{{ server_error|safe }}
+</div>
+{% endif %}
+
+<form enctype="multipart/form-data" method="post" action="./">
+{% csrf_token %}
+
+<table class="msg_form" width="100%">
+{{ form }}
+
+{% if uploaded_files.file_list %}
+<tr><th>{% trans "Uploaded Files:" %}
+</th><td>
+<ul>
+{% for f in uploaded_files.file_list %}
+<li>{{ f.delete_button|safe }} - {{ f.filename }} - {{f.mime_type }}
+{% endfor %}
+</ul></td></tr>
+{% endif %}
+
+<tr><td><input type="submit" name="cancel" value="{% trans "Cancel" %}" /></td>
+<td align="right"><input type="submit" name="upload" value="{% trans "Upload files" %}" /><input type="submit" value="{% trans "Send" %}" /></td></tr>
+</table>
+</form>
+{% endblock %}

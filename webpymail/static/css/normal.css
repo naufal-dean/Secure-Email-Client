@@ -1,0 +1,156 @@
+body {
+  font-family:Verdana, Arial, Helvetica, sans-serif;
+  font-size: 100%;
+  padding:0;
+  margin: 0;
+}
+
+img { border: none; }
+
+a {
+  text-decoration: none;
+}
+
+table, tr, th, td {
+  border-style: none;
+}
+
+.row_b {
+  background: #f0f0f0;
+}
+
+/**
+ * Toolbars and Menus
+ **/
+
+#toolbar_main {
+  margin:0;
+  background-color: #4060A2;
+  color: white;
+  height: 48px;
+}
+
+#toolbar_main h1 {
+  font-size: 170%;
+  margin:0;
+  padding: 6px;
+}
+
+.toolbar_right {
+  float: right;
+  padding: 8px 8px 0 0;
+  margin: 0;
+}
+
+div#menu_back {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 100;
+}
+
+.menu_button {
+  margin-top:2px;
+  margin-left:0.4em;
+  cursor: pointer;
+  background-image: url("/static/img/go-down.svg");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+}
+
+#bottom_toolbar {
+  margin:0;
+  background-color: #4060A2;
+  color: white;
+  height: 48px;
+}
+
+.menu_dropdown {
+  background-color: #4060a2;
+  position: absolute;
+  top: 48px;
+  right: 0;
+  z-index:150;
+  min-width: 5em;
+  color: white;
+}
+
+.menu_dropdown table {
+  border-collapse: collapse;
+}
+
+.menu_dropdown th, .menu_dropdown td {
+  margin: 0;
+  padding: 0;
+  border: 1px solid #161b2b;
+}
+
+.menu_dropdown li hr {
+  margin: 0;
+  border-style: solid;
+  color: white;
+}
+
+.menu_dropdown a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 0.5em 1em;
+}
+
+.menu_dropdown a:hover {
+  background-color: #161b2b;
+  color: white;
+}
+
+.menu_dropdown ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu_dropdown ul li{
+  margin:0;
+}
+
+/* Individual menus */
+
+div#main_menu {
+}
+
+/**
+ * Footer
+ **/
+
+#footer {
+  text-align: center;
+  font-size: 10px;
+  background-color: #4060A2;
+  color: white;
+  height: 12px;
+}
+
+/**
+ * Mix
+ **/
+
+.clear_both {
+  clear:both;
+  height:1px;
+  width:1px;
+  overflow:hidden;
+}
+
+.address_list {
+  margin-bottom: 1em;
+}
+
+.tag_list {
+  overflow-y: scroll;
+  width: 100%;
+  height: 100px;
+  font-size: 12px;
+}

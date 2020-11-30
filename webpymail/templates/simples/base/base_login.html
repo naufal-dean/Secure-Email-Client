@@ -1,0 +1,24 @@
+<!DOCTYPE html> 
+{% load loader_tags %}
+{% load i18n %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>{% block title %}{% trans "WebPyMail" %}{% endblock %}</title>
+    {% block headercontent %}{% endblock %}
+    <link href="{{ STATIC_URL }}css/normal.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body>
+<h1>{% block inpage_title %}{% endblock %}</h1>
+
+<!-- The Main Body -->
+<div id="contents">{% block contents %}{% endblock %}
+</div>
+
+<!-- Footer -->
+<div id="footer">
+    {% block footer %}{% trans "---- \O=o> ----" %}{% endblock %}
+</div>
+
+{% block endscripts %}{% endblock %}
+</body>
+</html>

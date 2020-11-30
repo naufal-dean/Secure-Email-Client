@@ -1,0 +1,14 @@
+{% load mailtags %}
+{% load i18n %}
+
+{% if part.is_text and not part.is_attachment %}
+  {% if part.is_html and show_html %} {# HTML part #}
+    {% autoescape off %}
+    {% show_part message part external_images %}
+    {% endautoescape %}
+    <div style="clear:both;"></div>
+  {% endif %}
+  {% if part.is_plain %} {# Text part #}
+    <pre>{% show_part message part %}</pre>
+  {% endif %}
+{% endif %}

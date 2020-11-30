@@ -1,0 +1,2 @@
+Django==2.2.9
+git+https://github.com/mozilla/bleach.git

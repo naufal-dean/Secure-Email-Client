@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% load loader_tags %}
+{% load i18n %}
+<html>
+<head>
+    <title>{% block title %}{% trans "WebPyMail" %}{% endblock %}</title>
+    {% block headercontent %}{% endblock %}
+    <link href="{{ STATIC_URL }}css/normal.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body>
+<div id="toolbar_main">
+  <h1>{% block inpage_title %}{% endblock %}</h1>
+</div>
+
+<!-- The Main Body -->
+<div id="contents">
+  {% block contents %}{% endblock %}
+</div>
+
+<!-- Footer -->
+<div id="footer">
+  {% block footer %}{% trans "WebPyMail webmail client" %}{% endblock %}
+</div>
+
+{% block endscripts %}{% endblock %}
+</body>
+</html>
