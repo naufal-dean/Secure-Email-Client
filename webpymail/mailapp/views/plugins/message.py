@@ -18,20 +18,19 @@ import hlimap
 
 
 @login_required
-def message_check_sign(request, folder, uid):
-    # get message object
-    config = WebpymailConfig(request)
-    folder_name = base64.urlsafe_b64decode(str(folder))
-    M = serverLogin(request)
-    folder = M[folder_name]
-    message = folder[int(uid)]
+def message_validate(request, folder, uid):
+    if request.method == 'POST':
+        # get message object
+        config = WebpymailConfig(request)
+        folder_name = base64.urlsafe_b64decode(str(folder))
+        M = serverLogin(request)
+        folder = M[folder_name]
+        message = folder[int(uid)]
 
-    # If it's a POST request
-    # if request.method == 'POST':
-    if request.method == 'GET':  # for debugging
+        # validate
+        # TODO: change check_digital_signature implementation
         text = get_text_plain(message)
         validation = check_digital_signature(text)
-        print(validation)
 
         # Check the query string
         try:
@@ -41,7 +40,7 @@ def message_check_sign(request, folder, uid):
         except ValueError:
             external_images = config.getboolean('message', 'external_images')
 
-        return render(request, 'mail/message_body.html', {
+        return render(request, 'mail/plugins/message_validate.html', {
             'folder': folder,
             'message': message,
             'show_images_inline': config.getboolean('message',
@@ -49,4 +48,16 @@ def message_check_sign(request, folder, uid):
             'show_html': config.getboolean('message', 'show_html'),
             'external_images': external_images,
             'validation': validation,
+            })
+
+    elif request.method == 'GET':
+        return redirect('mailapp_message_validate_form', folder=folder, uid=uid)
+
+
+@login_required
+def message_validate_form(request, folder, uid):
+    if request.method == 'GET':
+        return render(request, 'mail/plugins/message_validate_form.html', {
+            'folder': folder,
+            'uid': uid,
             })

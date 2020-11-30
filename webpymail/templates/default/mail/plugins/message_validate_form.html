@@ -1,0 +1,30 @@
+{% load loader_tags %}{% extends 'base/base.html' %}
+{% load i18n %}
+{% load webtags %}
+
+{% block inpage_title %}{{ folder }}{% endblock %}
+
+{% block headercontent %}
+<link href="{{ STATIC_URL }}css/message_list.css" rel="stylesheet" type="text/css"></link>
+{% endblock %}
+
+{% block extra_menus %}
+<a href="{% url 'folder_list' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px" title="{% trans "Folder List" %}"></a>
+<a href="{% url 'mailapp_send_message' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}"></a>
+&nbsp;
+{% if folder.have_messages %}
+<img id="tools_menu_toggle" class="menu_button" src="{{ STATIC_URL }}img/tools.svg" width="32px" height="32px" title="{% trans "Message list tools menu" %}">
+{% endif %}
+<img id="filter_menu_toggle" class="menu_button" src="{{ STATIC_URL }}img/view-filter.svg" width="32px" height="32px" title="{% trans "Message list filter menu" %}">
+{% endblock %}
+
+{% block contents %}
+<form method="post" action="{% url 'mailapp_message_validate' folder=folder uid=uid %}">
+    {% csrf_token %}
+    <input type="text" name="key" placeholder="private key" />
+    <input type="submit" name="submit" value="{% trans "Submit" %}" />
+</form>
+<form method="get" action="{% url 'mailapp-message' folder=folder uid=uid %}">
+    <input type="submit" name="cancel" value="{% trans "Cancel" %}" />
+</form>
+{% endblock %}
