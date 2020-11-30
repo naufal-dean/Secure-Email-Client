@@ -237,19 +237,26 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
         text_format = form_data['text_format']
         message_text = form_data['message_text'].encode('utf-8')
 
+        # test using hash
+        from hashlib import md5
+        hash = md5(message_text).hexdigest().encode('utf-8')
+        # append to message_text
+        message_text += b'\n\n' + b'<ds>' + hash + b'</ds>'
+
         config = WebpymailConfig(request)
 
         # Create html message
-        if text_format == MARKDOWN and HAS_MARKDOWN:
-            md = markdown.Markdown(output_format='HTML')
-            message_html = md.convert(smart_text(message_text))
-            css = config.get('message', 'css')
-            # TODO: use a template to get the html and insert the css
-            message_html = ('<html>\n<style>%s</style>'
-                            '<body>\n%s\n</body>\n</html>' %
-                            (css, message_html))
-        else:
-            message_html = None
+        # if text_format == MARKDOWN and HAS_MARKDOWN:
+        #     md = markdown.Markdown(output_format='HTML')
+        #     message_html = md.convert(smart_text(message_text))
+        #     css = config.get('message', 'css')
+        #     # TODO: use a template to get the html and insert the css
+        #     message_html = ('<html>\n<style>%s</style>'
+        #                     '<body>\n%s\n</body>\n</html>' %
+        #                     (css, message_html))
+        # else:
+        #     message_html = None
+        message_html = None
 
         # Create the RFC822 message
         # NOTE: the current relevant RFC is RFC 5322, maybe this function
