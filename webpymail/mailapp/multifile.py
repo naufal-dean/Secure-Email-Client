@@ -37,12 +37,15 @@ class MultiFileInput(FileInput):
         Should not be overridden.  Instead, subclasses should override the
         js, link, and/or fields methods which provide content to this method.
         """
-        final_attrs = self.build_attrs(attrs, type=self.input_type,
-                                       name=name+'[]')
-        count = final_attrs['count']
-        if count < 1:
-            count = 1
-        del final_attrs['count']
+        # final_attrs = self.build_attrs(attrs, type=self.input_type,
+        #                                name=name+'[]')
+        # count = final_attrs['count']
+        # if count < 1:
+        #     count = 1
+        # del final_attrs['count']
+
+        final_attrs = self.build_attrs(attrs, {'type': self.input_type, 'name': name+'[]'})
+        count = 1
 
         js = self.js(name, value, count, final_attrs)
         link = self.link(name, value, count, final_attrs)
