@@ -166,20 +166,7 @@ class PartTextNode(template.Node):
         self.part = Variable(part)
         self.external_images = external_images
 
-    def check_digital_signature(self, text):
-        import re
-        from hashlib import md5
-
-        match = re.findall(r'^(.*)\n\n<ds>(.*)</ds>$', text, re.DOTALL)
-        if len(match) == 0:
-            return False
-        message, hash = match[0]
-        valid = md5(message.encode('utf-8')).hexdigest() == hash
-        return valid
-
     def sanitize_text(self, text):
-        if not self.check_digital_signature(text):
-            return 'Invalid digital signature detected'
         text = escape(text)
         text = bleach.linkify(text)
         text = wrap_lines(text, 80)

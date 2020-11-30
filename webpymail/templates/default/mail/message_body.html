@@ -48,6 +48,14 @@
   {% include "mail/message_show_header.html" %}
   {% endwith %}
 
+  {% if validation != None %}
+  {% if validation %}
+  <div style="background-color: cyan">Digital Signature is VALID!</div>
+  {% else %}
+  <div style="background-color: pink">Digital Signature is INVALID!</div>
+  {% endif %}
+  {% endif %}
+
   <div class="message_body">
   {% for part in message.bodystructure.serial_message %}
       {# Text message part #}

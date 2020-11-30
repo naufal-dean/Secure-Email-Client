@@ -26,6 +26,7 @@
 from django.conf.urls import url
 
 from mailapp.views import folder, message_list, message, compose
+from mailapp.views.plugins import message as plugin_message
 
 folder_pat = r'FOLDER_(?P<folder>[A-Za-z0-9+.&%_=-]+)'
 
@@ -60,6 +61,12 @@ urlpatterns += [
             message.message_structure, name='mailapp_message_structure'),
         url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/SOURCE/$',
             message.message_source, name='mailapp_message_source'),
+        ]
+
+# Message views encryption and signature plugin:
+urlpatterns += [
+        url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/VALIDATE/$',
+            plugin_message.message_check_sign, name='mailapp_message_check_sign'),
         ]
 
 # Compose messages:
