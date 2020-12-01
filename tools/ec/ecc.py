@@ -5,17 +5,22 @@ from .util import mod_inverse
 
 
 class ECC:
-    def __init__(self, a, b, p):
+    def __init__(self, a, b, p, n=None, G:Point=None, auto_genkey=True):
         # initial check
         assert (4 * a ** 3 + 27 * b ** 2 != 0)
         # properties
         self.a = a
         self.b = b
         self.p = p
-        self.Group = self.generate_group()
-        self.n = len(self.Group) + 1
-        self.G = self.Group[random.randrange(0, len(self.Group))]
-        self.generate_key()
+        if n and G:
+            self.n = n
+            self.G = G
+        else:
+            self.Group = self.generate_group()
+            self.n = len(self.Group) + 1
+            self.G = self.Group[random.randrange(0, len(self.Group))]
+        if auto_genkey:
+            self.generate_key()
 
     def generate_group(self) -> list:
         result = []
@@ -88,7 +93,7 @@ class ECC:
         res += "====================================\n"
         return res
 
-    def save_file(self, filename:str): 
+    def save_file(self, filename:str):
         #filename without extension
         # .priv
         # a b p
@@ -125,4 +130,3 @@ class ECC:
         else:
             self.d = int(f.readline())
         f.close()
-
