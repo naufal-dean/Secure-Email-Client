@@ -153,7 +153,7 @@
   <div class="toolbar_right">
     {# Validate message #}
     <form method="get" action="{% url 'mailapp_message_process_form' folder=message.folder.url uid=message.uid %}">
-        <input type="submit" name="validate" value="{% trans "Validate" %}" />
+        <input type="submit" name="validate" value="{% trans "Process Email Content" %}" />
     </form>
     {# Delete message #}
     <form method="post" action="{% url 'mailapp-message' folder=message.folder.url uid=message.uid %}">
