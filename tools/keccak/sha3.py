@@ -107,7 +107,8 @@ class Sha3(object):
         self.buffer[:] = 0
  
     def hash(self, b):
-        self.absorb(unhexlify(hexlify(b)))
+        bytes_input = bytes(b.lower(), 'utf-8')
+        self.absorb(unhexlify(hexlify(bytes_input)))
         self.pad()
         ret = self.squeeze((200 - self.rate) // 2)
         return hexlify(ret)
@@ -116,14 +117,11 @@ class Sha3(object):
 
 if __name__ == '__main__':
     Sha3_256 = Sha3()
- 
-    l = 40
+    
     msg = "memez is luv"
     digest = "6b71180fa829da6775e6b00193ad033593156eb0e34c0ffbd43103615025ccf6"
     d = bytes(digest.lower(), 'utf-8')
-    m = bytes(msg.lower(), 'utf-8')
-    print(unhexlify(hexlify(m)))
-    h = Sha3_256.hash(m)
+    h = Sha3_256.hash(msg)
     if h != d:
         print("salah")
         print(h, digest.lower())
