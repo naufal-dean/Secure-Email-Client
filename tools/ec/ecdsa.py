@@ -12,6 +12,9 @@ class ECDSA:
         self.curve = curve
 
     def sign(self, hash: int) -> (int, int):
+        # initial check if the private key contained in the curve
+        if self.curve.d is None:
+            raise Exception("Private key d is needed to sign message")
         # calculate z: L_n leftmost byte of hash, n is bit_length of self.curve.n
         z = hash >> max(0, (hash.bit_length() - self.curve.n.bit_length()))
         while True:
