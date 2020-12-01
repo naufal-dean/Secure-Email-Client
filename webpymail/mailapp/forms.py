@@ -206,6 +206,73 @@ class ComposeMailForm(forms.Form):
 
     saved_files = MultyChecksum(required=False, widget=forms.HiddenInput())
 
+    use_encryption = forms.BooleanField(
+        label="Encrypt Email Content",
+        required=False,
+    )
+
+    encryption_iv = forms.CharField(
+        label=_('Encryption IV'),
+        required=False,
+    )
+
+    encryption_key = forms.CharField(
+        label=_('Encryption Key'),
+        required=False,
+    )
+
+    use_signature = forms.BooleanField(
+        label="Validate Signature",
+        required=False,
+    )
+
+    signature_pri_key_a = forms.IntegerField(
+        label=_('Public Key (a)'),
+        required=False,
+    )
+
+    signature_pri_key_b = forms.IntegerField(
+        label=_('Public Key (b)'),
+        required=False,
+    )
+
+    signature_pri_key_p = forms.IntegerField(
+        label=_('Public Key (p)'),
+        required=False,
+    )
+
+    signature_pri_key_d = forms.IntegerField(
+        label=_('Public Key (d)'),
+        required=False,
+    )
+
+    def clean(self):
+        cleaned_data = super(ComposeMailForm, self).clean()
+        # validate decryption forms
+        use_encryption = cleaned_data.get('use_encryption')
+        encryption_iv = cleaned_data.get('encryption_iv')
+        encryption_key = cleaned_data.get('encryption_key')
+        if use_encryption:
+            if len(encryption_iv) != 8:
+                self.add_error('encryption_iv', 'Encryption IV length must equal to 8.')
+            if len(encryption_key) != 32:
+                self.add_error('encryption_key', 'Encryption key length must equal to 32.')
+        # validate validation forms
+        use_signature = cleaned_data.get('use_signature')
+        signature_pri_key_a = cleaned_data.get('signature_pri_key_a')
+        signature_pri_key_b = cleaned_data.get('signature_pri_key_b')
+        signature_pri_key_p = cleaned_data.get('signature_pri_key_p')
+        signature_pri_key_d = cleaned_data.get('signature_pri_key_d')
+        if use_signature:
+            if not signature_pri_key_a:
+                self.add_error('signature_pri_key_a', 'This field is required to use signature.')
+            if not signature_pri_key_b:
+                self.add_error('signature_pri_key_b', 'This field is required to use signature.')
+            if not signature_pri_key_p:
+                self.add_error('signature_pri_key_p', 'This field is required to use signature.')
+            if not signature_pri_key_d:
+                self.add_error('signature_pri_key_d', 'This field is required to use signature.')
+
 MESSAGE_ACTIONS = ((0, _('Choose one action')),
                    (1, _('Mark read')),
                    (2, _('Mark unread')),

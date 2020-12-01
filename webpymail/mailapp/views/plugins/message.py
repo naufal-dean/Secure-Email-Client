@@ -101,7 +101,7 @@ def message_process(request, folder, uid):
                 'message_text_dec': message_text_dec,
                 'decryption_error': decryption_error,
                 })
-                
+
     else:
         form = ProcessEmailForm()
 

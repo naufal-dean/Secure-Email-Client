@@ -255,8 +255,8 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
         #     message_html = None
         message_html = None
 
-        # TODO: retrieve from forms
-        use_signature = True
+        # signature plugin
+        use_signature = form_data['use_signature']
         if use_signature:
             # TODO: implement signature using ECDSA
             # test using hash
@@ -265,18 +265,19 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
             # append to message_text
             message_text += b'\n\n' + b'<ds>' + hash + b'</ds>'
 
-        # TODO: retrieve from forms
-        use_encryption = True
+        # encryption plugin
+        use_encryption = form_data['use_encryption']
 
         # Create the RFC822 message
         # NOTE: the current relevant RFC is RFC 5322, maybe this function
         # name should be changed to reflect this, maybe it shouldn't be
         # named after the RFC!
         if use_encryption:
-            # TODO: retrieve iv and key from forms
             # Encryption Message
-            iv = '12345678'
-            key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF'
+            # iv = '12345678'
+            # key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF'
+            iv = form_data['encryption_iv']
+            key = form_data['encryption_key']
 
             cipher = STRAIT(key, Mode.CBC)
             message_text_enc = iv.encode('utf-8') + cipher.encrypt(message_text, iv)

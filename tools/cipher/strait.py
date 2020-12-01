@@ -116,7 +116,7 @@ class STRAIT:
                 dec += util.xor_b(dec_nonce, word)
                 cnt += 1
 
-        return dec
+        return dec.rstrip(b'\x00')
 
     def sbox(self, inp : bytes):
         res_byte = b''
