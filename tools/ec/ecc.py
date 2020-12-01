@@ -5,21 +5,28 @@ from .util import mod_inverse
 
 
 class ECC:
-    def __init__(self, a, b, p, n=None, G:Point=None, auto_genkey=True):
+    def __init__(self, a, b, p, n=None, G:Point=None, auto_gen_group=True, auto_gen_key=True):
         # initial check
         assert (4 * a ** 3 + 27 * b ** 2 != 0)
         # properties
         self.a = a
         self.b = b
         self.p = p
+        self.Group = None
+        self.n = None
+        self.G = None
+        self.Q = None
+        self.d = None
+        # init properties
         if n and G:
             self.n = n
             self.G = G
         else:
-            self.Group = self.generate_group()
-            self.n = len(self.Group) + 1
-            self.G = self.Group[random.randrange(0, len(self.Group))]
-        if auto_genkey:
+            if auto_gen_group:
+                self.Group = self.generate_group()
+                self.n = len(self.Group) + 1
+                self.G = self.Group[random.randrange(0, len(self.Group))]
+        if auto_gen_key:
             self.generate_key()
 
     def generate_group(self) -> list:
@@ -30,6 +37,11 @@ class ECC:
                 if (j**2 % self.p == x):
                     result.append(Point(i, j))
         return result
+
+    def get_group(self) -> list:
+        if self.Group is None:
+            self.Group = self.generate_group()
+        return self.Group
 
     def add_points(self, P: Point, Q: Point) -> Point:
         # TODO: remove
@@ -94,39 +106,61 @@ class ECC:
         return res
 
     def save_file(self, filename:str):
-        #filename without extension
+        # filename without extension, [...] indicate optional
         # .priv
-        # a b p
+        # a b p [n]
+        # n
         # Gx Gy
         # d
 
         # .pub
-        # a b p
+        # a b p [n]
+        # n
         # Gx Gy
         # Qx Qy
 
         pri = open(filename + ".pri", "w")
-        pri.write(str(self.a) + " " + str(self.b) + " " + str(self.p) + "\n")
+        pri.write(str(self.a) + " " + str(self.b) + " " + str(self.p) + " " + str(self.n) + "\n")
         pri.write(str(self.G.x) + " " + str(self.G.y) + "\n")
         pri.write(str(self.d))
         pri.close()
+
         pub = open(filename + ".pub", "w")
-        pub.write(str(self.a) + " " + str(self.b) + " " + str(self.p) + "\n")
+        pub.write(str(self.a) + " " + str(self.b) + " " + str(self.p) + " " + str(self.n) + "\n")
         pub.write(str(self.G.x) + " " + str(self.G.y) + "\n")
         pub.write(str(self.Q.x) + " " + str(self.Q.x))
         pub.close()
 
-    def load_key(self, filename:str, is_public:bool):
+    @classmethod
+    def load_key(cls, filename:str, is_public:bool):
         f = open(filename, "r")
+        # parse first line
         line_1 = f.readline().split(" ")
-        self.a = int(line_1[0])
-        self.b = int(line_1[1])
-        self.p = int(line_1[2])
+        a = int(line_1[0])
+        b = int(line_1[1])
+        p = int(line_1[2])
+        if len(line_1) > 3:  # n is supplied
+            # create ecc instance with auto_gen_group and auto_gen_key disabled
+            # curve group is needed to calculate self.n only, and in this case it is already supplied
+            # auto_gen_key is not needed because it will be loaded from file
+            ecc = cls(a, b, p, auto_gen_group=False, auto_gen_key=False)
+            # assign n
+            ecc.n = int(line_1[3])
+        else:
+            # create ecc instance
+            # auto_gen_group will generate curve group and the appropriate n
+            # auto_gen_key is not needed because it will be loaded from file
+            ecc = cls(a, b, p, auto_gen_group=True, auto_gen_key=False)
+        # parse second line
         line_2 = f.readline().split(" ")
-        self.G = Point(int(line_2[0]), int(line_2[1]))
+        ecc.G = Point(int(line_2[0]), int(line_2[1]))
+        # parse third line
         if is_public:
             line_3 = f.readline().split(" ")
-            self.Q = Point(int(line_3[0]), int(line_3[1]))
+            ecc.Q = Point(int(line_3[0]), int(line_3[1]))
         else:
-            self.d = int(f.readline())
+            ecc.d = int(f.readline())
+            ecc.Q = ecc.multiply(ecc.d, ecc.G)
         f.close()
+        # return
+        return ecc
