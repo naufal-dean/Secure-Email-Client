@@ -187,6 +187,69 @@ class ComposeMailForm(forms.Form):
         text_format = forms.IntegerField(initial=1,
                                          widget=forms.HiddenInput())
 
+
+    use_encryption = forms.BooleanField(
+        label="Encrypt Email Content",
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Encrypt email plain/text content'),
+        required=False,
+    )
+
+    encryption_iv = forms.CharField(
+        label=_('Encryption IV'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('IV used for encryption'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    encryption_key = forms.CharField(
+        label=_('Encryption Key'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Key used for encryption'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    use_signature = forms.BooleanField(
+        label="Validate Signature",
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Add signature to plain/text content'),
+        required=False,
+    )
+
+    signature_pri_key_a = forms.IntegerField(
+        label=_('Private Key (a)'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Parameter a in ec y^2 = x^3 + ax + b mod p'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    signature_pri_key_b = forms.IntegerField(
+        label=_('Private Key (b)'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Parameter b in ec y^2 = x^3 + ax + b mod p'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    signature_pri_key_p = forms.IntegerField(
+        label=_('Private Key (p)'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Parameter p in ec y^2 = x^3 + ax + b mod p'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    signature_pri_key_d = forms.IntegerField(
+        label=_('Private Key (d)'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Private key d in ec y^2 = x^3 + ax + b mod p'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
     subject = forms.CharField(
         max_length=100,
         label=_('Subject'),
@@ -205,52 +268,6 @@ class ComposeMailForm(forms.Form):
         count=1)
 
     saved_files = MultyChecksum(required=False, widget=forms.HiddenInput())
-
-    use_encryption = forms.BooleanField(
-        label="Encrypt Email Content",
-        required=False,
-    )
-
-    encryption_iv = forms.CharField(
-        label=_('Encryption IV'),
-        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
-        required=False,
-    )
-
-    encryption_key = forms.CharField(
-        label=_('Encryption Key'),
-        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
-        required=False,
-    )
-
-    use_signature = forms.BooleanField(
-        label="Validate Signature",
-        required=False,
-    )
-
-    signature_pri_key_a = forms.IntegerField(
-        label=_('Public Key (a)'),
-        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
-        required=False,
-    )
-
-    signature_pri_key_b = forms.IntegerField(
-        label=_('Public Key (b)'),
-        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
-        required=False,
-    )
-
-    signature_pri_key_p = forms.IntegerField(
-        label=_('Public Key (p)'),
-        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
-        required=False,
-    )
-
-    signature_pri_key_d = forms.IntegerField(
-        label=_('Public Key (d)'),
-        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
-        required=False,
-    )
 
     def clean(self):
         cleaned_data = super(ComposeMailForm, self).clean()
