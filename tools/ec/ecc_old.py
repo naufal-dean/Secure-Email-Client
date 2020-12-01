@@ -4,7 +4,7 @@ class ECC:
     def __init__(self, a, b, n):
         if (4*a**3 + 27*b**2 == 0):
             print("a dan b salah")
-        self.a = a 
+        self.a = a
         self.b = b
         self.n = n # dalam mod
         self.Group = self.generate_grup()
@@ -32,7 +32,7 @@ class ECC:
             if (P[0] - Q[0]) == 0:
                return (float('inf'), float('inf'))
             else:
-                m = ((Q[1] - P[1]) * pow(Q[0]-P[0], -1, self.n)) % self.n 
+                m = ((Q[1] - P[1]) * pow(Q[0]-P[0], -1, self.n)) % self.n
         x = (m**2 - P[0] - Q[0]) % self.n
         y = (m*(P[0] - x) - P[1]) % self.n
         return (x,y)
@@ -115,5 +115,5 @@ if __name__ == "__main__":
     x1, x2 = ecc.signing(2000)
     if ecc.verrifying(2000, x1, x2):
         print("Berhasil verifikasi")
-    else : 
+    else :
         print("Gagal verifikasi")
