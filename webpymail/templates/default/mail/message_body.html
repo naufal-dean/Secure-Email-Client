@@ -150,20 +150,22 @@
 
 
 <div id="bottom_toolbar">
-  <div class="toolbar_right">
-    {# Validate message #}
-    <form method="get" action="{% url 'mailapp_message_process' folder=message.folder.url uid=message.uid %}">
-        <input type="submit" name="validate" value="{% trans "Process Email Content" %}" />
-    </form>
-    {# Delete message #}
-    <form method="post" action="{% url 'mailapp-message' folder=message.folder.url uid=message.uid %}">
-        {% csrf_token %}
-        {% if message.deleted %}
-            <input type="submit" name="undelete" value="{% trans "Undelete" %}" />
-        {% else %}
-            <input type="submit" name="delete" value="{% trans "Delete" %}" />
-        {% endif %}
-    </form>
-  </div>
+    <div class="toolbar_left">
+      {# Delete message #}
+      <form method="post" action="{% url 'mailapp-message' folder=message.folder.url uid=message.uid %}">
+          {% csrf_token %}
+          {% if message.deleted %}
+              <input type="submit" name="undelete" value="{% trans "Undelete" %}" />
+          {% else %}
+              <input type="submit" name="delete" value="{% trans "Delete" %}" />
+          {% endif %}
+      </form>
+    </div>
+    <div class="toolbar_right">
+        {# Process message (decrypt and/or validate signature) #}
+        <form method="get" action="{% url 'mailapp_message_process' folder=message.folder.url uid=message.uid %}">
+            <input type="submit" name="validate" value="{% trans "Process Email Content" %}" />
+        </form>
+    </div>
 </div>
 {% endblock %}

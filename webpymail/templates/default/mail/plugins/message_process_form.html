@@ -6,6 +6,7 @@
 
 {% block headercontent %}
 <link href="{{ STATIC_URL }}css/message_list.css" rel="stylesheet" type="text/css"></link>
+<link href="{{ STATIC_URL }}css/plugins/message_process.css" rel="stylesheet" type="text/css"></link>
 {% endblock %}
 
 {% block extra_menus %}
@@ -19,17 +20,31 @@
 {% endblock %}
 
 {% block contents %}
-<form method="post" action="{% url 'mailapp_message_process' folder=folder uid=uid %}">
+<form id="message_process_form" method="post" action="{% url 'mailapp_message_process' folder=folder uid=uid %}">
     {% csrf_token %}
-    {% for field in form %}
-        <div>
-            {{ field.label_tag }} {{ field }}
-            <span style="color: red">{{ field.errors.0 }}</span>
-        </div>
-    {% endfor %}
-    <input type="submit" name="submit" value="{% trans "Submit" %}" />
+    <div class="form_container">
+        <table class="form_table">
+        {% for field in form %}
+            <tr class="form_row">
+                <th>{{ field.label_tag }}</th>
+                <td>
+                    {{ field }}
+                    <span style="color: red">{{ field.errors.0 }}</span>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
 </form>
-<form method="get" action="{% url 'mailapp-message' folder=folder uid=uid %}">
-    <input type="submit" name="cancel" value="{% trans "Cancel" %}" />
-</form>
+
+<div id="bottom_toolbar">
+    <div class="toolbar_left">
+        <form method="get" action="{% url 'mailapp-message' folder=folder uid=uid %}">
+            <input type="submit" name="cancel" value="{% trans "Cancel" %}" />
+        </form>
+    </div>
+    <div class="toolbar_right">
+        <input form="message_process_form" type="submit" name="submit" value="{% trans "Submit" %}" />
+    </div>
+</div>
 {% endblock %}

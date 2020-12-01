@@ -213,11 +213,13 @@ class ComposeMailForm(forms.Form):
 
     encryption_iv = forms.CharField(
         label=_('Encryption IV'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     encryption_key = forms.CharField(
         label=_('Encryption Key'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
@@ -228,21 +230,25 @@ class ComposeMailForm(forms.Form):
 
     signature_pri_key_a = forms.IntegerField(
         label=_('Public Key (a)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     signature_pri_key_b = forms.IntegerField(
         label=_('Public Key (b)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     signature_pri_key_p = forms.IntegerField(
         label=_('Public Key (p)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     signature_pri_key_d = forms.IntegerField(
         label=_('Public Key (d)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
@@ -308,6 +314,7 @@ class ProcessEmailForm(forms.Form):
 
     decryption_key = forms.CharField(
         label=_('Decryption Key'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
@@ -318,26 +325,31 @@ class ProcessEmailForm(forms.Form):
 
     validation_pub_key_a = forms.IntegerField(
         label=_('Public Key (a)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     validation_pub_key_b = forms.IntegerField(
         label=_('Public Key (b)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     validation_pub_key_p = forms.IntegerField(
         label=_('Public Key (p)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     validation_pub_key_Qx = forms.IntegerField(
         label=_('Public Key (Q.x)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     validation_pub_key_Qy = forms.IntegerField(
         label=_('Public Key (Q.y)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
