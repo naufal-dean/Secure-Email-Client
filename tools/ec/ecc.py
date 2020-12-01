@@ -81,8 +81,48 @@ class ECC:
         res += "a: " + str(self.a) + "\n"
         res += "b: " + str(self.b) + "\n"
         res += "n: " + str(self.n) + "\n"
+        res += "p: " + str(self.p) + "\n"
         res += "base point (G): " + str(self.G) + "\n"
         res += "private key (d): " + str(self.d) + "\n"
         res += "public key (Q): " + str(self.Q) + "\n"
         res += "====================================\n"
         return res
+
+    def save_file(self, filename:str): 
+        #filename without extension
+        # .priv
+        # a b p
+        # Gx Gy
+        # d
+
+        # .pub
+        # a b p
+        # Gx Gy
+        # Qx Qy
+
+        pri = open(filename + ".pri", "w")
+        pri.write(str(self.a) + " " + str(self.b) + " " + str(self.p) + "\n")
+        pri.write(str(self.G.x) + " " + str(self.G.y) + "\n")
+        pri.write(str(self.d))
+        pri.close()
+        pub = open(filename + ".pub", "w")
+        pub.write(str(self.a) + " " + str(self.b) + " " + str(self.p) + "\n")
+        pub.write(str(self.G.x) + " " + str(self.G.y) + "\n")
+        pub.write(str(self.Q.x) + " " + str(self.Q.x))
+        pub.close()
+
+    def load_key(self, filename:str, is_public:bool):
+        f = open(filename, "r")
+        line_1 = f.readline().split(" ")
+        self.a = int(line_1[0])
+        self.b = int(line_1[1])
+        self.p = int(line_1[2])
+        line_2 = f.readline().split(" ")
+        self.G = Point(int(line_2[0]), int(line_2[1]))
+        if is_public:
+            line_3 = f.readline().split(" ")
+            self.Q = Point(int(line_3[0]), int(line_3[1]))
+        else:
+            self.d = int(f.readline())
+        f.close()
+
