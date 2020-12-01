@@ -56,6 +56,9 @@ from mailapp.views.mail_utils import (serverLogin, send_mail,
                                       mail_addr_name_str, quote_wrap_lines,
                                       show_addrs, compose_rfc822)
 
+# Plugin Imports
+from tools.cipher import STRAIT, Mode
+
 # CONST
 PLAIN = 1
 MARKDOWN = 2
@@ -237,12 +240,6 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
         text_format = form_data['text_format']
         message_text = form_data['message_text'].encode('utf-8')
 
-        # test using hash
-        from hashlib import md5
-        hash = md5(message_text).hexdigest().encode('utf-8')
-        # append to message_text
-        message_text += b'\n\n' + b'<ds>' + hash + b'</ds>'
-
         config = WebpymailConfig(request)
 
         # Create html message
@@ -258,13 +255,43 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
         #     message_html = None
         message_html = None
 
+        # TODO: retrieve from forms
+        use_signature = True
+        if use_signature:
+            # TODO: implement signature using ECDSA
+            # test using hash
+            from hashlib import md5
+            hash = md5(message_text).hexdigest().encode('utf-8')
+            # append to message_text
+            message_text += b'\n\n' + b'<ds>' + hash + b'</ds>'
+
+        # TODO: retrieve from forms
+        use_encryption = True
+
         # Create the RFC822 message
         # NOTE: the current relevant RFC is RFC 5322, maybe this function
         # name should be changed to reflect this, maybe it shouldn't be
         # named after the RFC!
-        message = compose_rfc822(from_addr, to_addr, cc_addr, bcc_addr,
-                                 subject, message_text, message_html,
-                                 uploaded_files, headers)
+        if use_encryption:
+            # TODO: retrieve iv and key from forms
+            # Encryption Message
+            iv = '12345678'
+            key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF'
+
+            cipher = STRAIT(key, Mode.CBC)
+            message_text_enc = iv.encode('utf-8') + cipher.encrypt(message_text, iv)
+            message_text_enc = base64.b64encode(message_text_enc)
+            print('enc:', message_text_enc)
+
+            # Build message
+            message = compose_rfc822(from_addr, to_addr, cc_addr, bcc_addr,
+                                     subject, message_text_enc, message_html,
+                                     uploaded_files, headers)
+        else:
+            # Build message
+            message = compose_rfc822(from_addr, to_addr, cc_addr, bcc_addr,
+                                     subject, message_text, message_html,
+                                     uploaded_files, headers)
 
         # Post the message to the SMTP server
         try:

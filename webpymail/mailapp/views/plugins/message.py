@@ -14,7 +14,11 @@ from themesapp.shortcuts import render
 from utils.config import WebpymailConfig
 from .. import msgactions
 
+# Other
 import hlimap
+
+# Plugin Imports
+from tools.cipher import STRAIT, Mode
 
 
 @login_required
@@ -27,10 +31,32 @@ def message_validate(request, folder, uid):
         folder = M[folder_name]
         message = folder[int(uid)]
 
-        # validate
-        # TODO: change check_digital_signature implementation
-        text = get_text_plain(message)
-        validation = check_digital_signature(text)
+        # Get text/plain part
+        text_plain = get_text_plain(message)
+
+        # TODO: retrieve use_decryption from forms
+        use_decryption = True
+        message_text_dec = None
+        if use_decryption:
+            # decrypt
+            # TODO: retrieve key from forms
+            key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF'
+
+            text_plain = base64.b64decode(text_plain)
+            cipher = STRAIT(key, Mode.CBC)
+            iv, message_text_enc = text_plain[:8].decode('utf-8'), text_plain[8:]
+            message_text_dec = cipher.decrypt(message_text_enc, iv).decode('utf-8')
+            text_to_validate = message_text_dec
+        else:
+            text_to_validate = text_plain
+
+        # TODO: retrieve use_validation from forms
+        use_validation = True
+        validation = None
+        if use_validation:
+            # validate
+            # TODO: change check_digital_signature implementation
+            validation = check_digital_signature(text_to_validate)
 
         # Check the query string
         try:
@@ -47,7 +73,10 @@ def message_validate(request, folder, uid):
                                                     'show_images_inline'),
             'show_html': config.getboolean('message', 'show_html'),
             'external_images': external_images,
+            'use_validation': use_validation,
             'validation': validation,
+            'use_decryption': use_decryption,
+            'message_text_dec': message_text_dec,
             })
 
     elif request.method == 'GET':

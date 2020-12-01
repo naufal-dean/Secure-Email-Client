@@ -1,5 +1,7 @@
 import enum
-import util
+
+from . import util
+
 
 SBOX = [
     [b'\x30', b'\x56', b'\x0f', b'\x04', b'\x3b', b'\x40', b'\x12', b'\xb2', b'\x97', b'\x21', b'\xdd', b'\x7f', b'\xda', b'\x20', b'\xd2', b'\x2a'],
@@ -38,24 +40,24 @@ class STRAIT:
         self.factor3 = None
 
         self.generate_feistel_iter()
-    
+
     def init_message_buffers(self, msg):
         # Init message
         if isinstance(msg, str):
             self.msg = bytes(msg, 'UTF-8')
         else:
             self.msg = msg
-        
+
         self.msg_parts = util.msg_split(self.msg)
-    
+
     def generate_feistel_iter(self):
         xor_half = util.xor_b(self.key[:4], self.key[4:])
         n_mod = int.from_bytes(
             util.lshift_wrap(xor_half, 5), byteorder='big'
-        ) 
-        
+        )
+
         self.feistel_iter = 10 + n_mod % 11
-    
+
     def encrypt(self, msg, IV : str = None):
         self.init_message_buffers(msg)
         enc = b''
@@ -63,7 +65,7 @@ class STRAIT:
         if self.mode == Mode.ECB:
             for word in self.msg_parts:
                 enc += self.feistel_network_enc(word)
-        
+
         elif self.mode == Mode.CBC:
             assert len(IV) == 8
             prev = bytes(IV, 'UTF-8')
@@ -73,7 +75,7 @@ class STRAIT:
                 )
                 enc += enc_word
                 prev = enc_word
-        
+
         elif self.mode == Mode.CTR:
             assert len(IV) == 8
             nonce = int.from_bytes(bytes(IV, 'UTF-8'), byteorder='big')
@@ -86,7 +88,7 @@ class STRAIT:
                 cnt += 1
 
         return enc
-    
+
     def decrypt(self, msg, IV : str = None):
         self.init_message_buffers(msg)
         dec = b''
@@ -94,7 +96,7 @@ class STRAIT:
         if self.mode == Mode.ECB:
             for word in self.msg_parts:
                 dec += self.feistel_network_dec(word)
-        
+
         elif self.mode == Mode.CBC:
             assert len(IV) == 8
             prev = bytes(IV, 'UTF-8')
@@ -102,7 +104,7 @@ class STRAIT:
                 dec_word = self.feistel_network_dec(word)
                 dec += util.xor_b(prev, dec_word)
                 prev = word
-        
+
         elif self.mode == Mode.CTR:
             assert len(IV) == 8
             nonce = int.from_bytes(bytes(IV, 'UTF-8'), byteorder='big')
@@ -122,7 +124,7 @@ class STRAIT:
             x = byte >> 4
             y = byte & 0xf
             res_byte = SBOX[x][y] + res_byte
-        
+
         return res_byte
 
     def generate_factors_from_key(self):
@@ -138,7 +140,7 @@ class STRAIT:
 
         self.factor1 = util.xor_b(intermed_1, intermed_4)
         self.factor2 = util.xor_b(intermed_2, intermed_3)
-    
+
     def generate_factor3(self, msg_block : bytes):
         assert len(msg_block) == 4
         # Generating msg_block + pad
@@ -158,7 +160,7 @@ class STRAIT:
             ),
             self.transpose_fac2()
         )
-    
+
     def feistel_func(self, msg_part : bytes):
         assert len(msg_part) == 4
         self.generate_factors_from_key()
@@ -188,9 +190,9 @@ class STRAIT:
                 self.feistel_func(inp_rbyte)
             )
             cur_msg_block = inp_rbyte + out_rbyte
-        
+
         return cur_msg_block
-    
+
     def feistel_network_dec(self, msg_block : bytes):
         assert len(msg_block) == 8
         cur_msg_block = msg_block
@@ -205,7 +207,7 @@ class STRAIT:
                 self.feistel_func(inp_lbyte)
             )
             cur_msg_block = out_lbyte + inp_lbyte
-        
+
         return cur_msg_block
 
     # NOT IMPLEMENTED YET
@@ -213,7 +215,7 @@ class STRAIT:
         return self.factor2
 
 if __name__ == '__main__':
-    # Check mode 
+    # Check mode
     print(Mode.CBC == Mode.CBC)
 
     pt = 'huehuehufhuehuequngqangqing'
