@@ -49,10 +49,14 @@
   {% endwith %}
 
   {% if use_validation %}
-  {% if validation %}
-  <div style="background-color: cyan">Digital Signature is VALID!</div>
+  {% if validation_error != None %}
+      <div style="background-color: pink">{{ validation_error }}</div>
   {% else %}
-  <div style="background-color: pink">Digital Signature is INVALID!</div>
+      {% if validation %}
+      <div style="background-color: cyan">Digital Signature is VALID!</div>
+      {% else %}
+      <div style="background-color: pink">Digital Signature is INVALID!</div>
+      {% endif %}
   {% endif %}
   {% endif %}
 

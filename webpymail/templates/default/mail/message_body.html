@@ -152,7 +152,7 @@
 <div id="bottom_toolbar">
   <div class="toolbar_right">
     {# Validate message #}
-    <form method="get" action="{% url 'mailapp_message_validate_form' folder=message.folder.url uid=message.uid %}">
+    <form method="get" action="{% url 'mailapp_message_process_form' folder=message.folder.url uid=message.uid %}">
         <input type="submit" name="validate" value="{% trans "Validate" %}" />
     </form>
     {# Delete message #}

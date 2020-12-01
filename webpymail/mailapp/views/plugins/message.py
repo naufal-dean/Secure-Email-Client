@@ -22,7 +22,7 @@ from tools.cipher import STRAIT, Mode
 
 
 @login_required
-def message_validate(request, folder, uid):
+def message_process(request, folder, uid):
     if request.method == 'POST':
         # get message object
         config = WebpymailConfig(request)
@@ -34,29 +34,38 @@ def message_validate(request, folder, uid):
         # Get text/plain part
         text_plain = get_text_plain(message)
 
-        # TODO: retrieve use_decryption from forms
-        use_decryption = True
+        # decryption plugin
+        use_decryption = True if 'on' in request.POST.get('use_decryption', '') else False
         message_text_dec = None
         if use_decryption:
             # decrypt
-            # TODO: retrieve key from forms
-            key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF'
+            # decription_key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF'
+            decription_key = request.POST.get('decription_key', '').ljust(32, '0')[:32]
 
             text_plain = base64.b64decode(text_plain)
-            cipher = STRAIT(key, Mode.CBC)
+            cipher = STRAIT(decription_key, Mode.CBC)
             iv, message_text_enc = text_plain[:8].decode('utf-8'), text_plain[8:]
-            message_text_dec = cipher.decrypt(message_text_enc, iv).decode('utf-8')
+            message_text_dec = cipher.decrypt(message_text_enc, iv).decode('utf-8', 'ignore')
             text_to_validate = message_text_dec
         else:
             text_to_validate = text_plain
 
-        # TODO: retrieve use_validation from forms
-        use_validation = True
+        # validation plugin
+        use_validation = True if 'on' in request.POST.get('use_validation', '') else False
         validation = None
+        validation_error = None
         if use_validation:
-            # validate
-            # TODO: change check_digital_signature implementation
-            validation = check_digital_signature(text_to_validate)
+            try:
+                # validate
+                validation_pub_key_a = int(request.POST['validation_pub_key_a'])
+                validation_pub_key_b = int(request.POST['validation_pub_key_b'])
+                validation_pub_key_p = int(request.POST['validation_pub_key_p'])
+                validation_pub_key_Qx = int(request.POST['validation_pub_key_Qx'])
+                validation_pub_key_Qy = int(request.POST['validation_pub_key_Qy'])
+                # TODO: change check_digital_signature implementation
+                validation = check_digital_signature(text_to_validate)
+            except Exception as e:
+                validation_error = 'Error when validating signature: ' + str(e)
 
         # Check the query string
         try:
@@ -66,7 +75,7 @@ def message_validate(request, folder, uid):
         except ValueError:
             external_images = config.getboolean('message', 'external_images')
 
-        return render(request, 'mail/plugins/message_validate.html', {
+        return render(request, 'mail/plugins/message_process.html', {
             'folder': folder,
             'message': message,
             'show_images_inline': config.getboolean('message',
@@ -75,18 +84,19 @@ def message_validate(request, folder, uid):
             'external_images': external_images,
             'use_validation': use_validation,
             'validation': validation,
+            'validation_error': validation_error,
             'use_decryption': use_decryption,
             'message_text_dec': message_text_dec,
             })
 
     elif request.method == 'GET':
-        return redirect('mailapp_message_validate_form', folder=folder, uid=uid)
+        return redirect('mailapp_message_process_form', folder=folder, uid=uid)
 
 
 @login_required
-def message_validate_form(request, folder, uid):
+def message_process_form(request, folder, uid):
     if request.method == 'GET':
-        return render(request, 'mail/plugins/message_validate_form.html', {
+        return render(request, 'mail/plugins/message_process_form.html', {
             'folder': folder,
             'uid': uid,
             })

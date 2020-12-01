@@ -65,10 +65,10 @@ urlpatterns += [
 
 # Message views encryption and signature plugin:
 urlpatterns += [
-        url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/VALIDATE/$',
-            plugin_message.message_validate, name='mailapp_message_validate'),
-        url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/VALIDATE-FORM/$',
-            plugin_message.message_validate_form, name='mailapp_message_validate_form'),
+        url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/process-mail/$',
+            plugin_message.message_process, name='mailapp_message_process'),
+        url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/process-mail-form/$',
+            plugin_message.message_process_form, name='mailapp_message_process_form'),
         ]
 
 # Compose messages:
