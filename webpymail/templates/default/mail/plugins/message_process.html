@@ -60,11 +60,13 @@
   {% endif %}
   {% endif %}
 
-  <div class="message_body" style="background-color: palegreen">
   {% if use_decryption %}
-  <div><pre>{{ message_text_dec }}</pre></div>
+  {% if decryption_error != None %}
+      <div style="background-color: pink">{{ decryption_error }}</div>
+  {% else %}
+      <div style="background-color: palegreen"><pre>{{ message_text_dec }}</pre></div>
   {% endif %}
-  </div>
+  {% endif %}
 
   <div class="message_body">
   {% for part in message.bodystructure.serial_message %}

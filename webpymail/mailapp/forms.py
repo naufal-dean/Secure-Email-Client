@@ -231,3 +231,71 @@ class MessageActionForm(forms.Form):
     messages = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
     action = forms.ChoiceField(choices=MESSAGE_ACTIONS)
     folder = forms.ChoiceField()
+
+
+class ProcessEmailForm(forms.Form):
+    use_decryption = forms.BooleanField(
+        label="Decrypt Email Content",
+        required=False,
+    )
+
+    decryption_key = forms.CharField(
+        label=_('Decryption Key'),
+        required=False,
+    )
+
+    use_validation = forms.BooleanField(
+        label="Validate Signature",
+        required=False,
+    )
+
+    validation_pub_key_a = forms.IntegerField(
+        label=_('Public Key (a)'),
+        required=False,
+    )
+
+    validation_pub_key_b = forms.IntegerField(
+        label=_('Public Key (b)'),
+        required=False,
+    )
+
+    validation_pub_key_p = forms.IntegerField(
+        label=_('Public Key (p)'),
+        required=False,
+    )
+
+    validation_pub_key_Qx = forms.IntegerField(
+        label=_('Public Key (Q.x)'),
+        required=False,
+    )
+
+    validation_pub_key_Qy = forms.IntegerField(
+        label=_('Public Key (Q.y)'),
+        required=False,
+    )
+
+    def clean(self):
+        cleaned_data = super(ProcessEmailForm, self).clean()
+        # validate decryption forms
+        use_decryption = cleaned_data.get('use_decryption')
+        decryption_key = cleaned_data.get('decryption_key')
+        if use_decryption and len(decryption_key) != 32:
+            self.add_error('decryption_key', 'Decryption key length must equal to 32.')
+        # validate validation forms
+        use_validation = cleaned_data.get('use_validation')
+        validation_pub_key_a = cleaned_data.get('validation_pub_key_a')
+        validation_pub_key_b = cleaned_data.get('validation_pub_key_b')
+        validation_pub_key_p = cleaned_data.get('validation_pub_key_p')
+        validation_pub_key_Qx = cleaned_data.get('validation_pub_key_Qx')
+        validation_pub_key_Qy = cleaned_data.get('validation_pub_key_Qy')
+        if use_validation:
+            if not validation_pub_key_a:
+                self.add_error('validation_pub_key_a', 'This field is required to use validation.')
+            if not validation_pub_key_b:
+                self.add_error('validation_pub_key_b', 'This field is required to use validation.')
+            if not validation_pub_key_p:
+                self.add_error('validation_pub_key_p', 'This field is required to use validation.')
+            if not validation_pub_key_Qx:
+                self.add_error('validation_pub_key_Qx', 'This field is required to use validation.')
+            if not validation_pub_key_Qy:
+                self.add_error('validation_pub_key_Qy', 'This field is required to use validation.')

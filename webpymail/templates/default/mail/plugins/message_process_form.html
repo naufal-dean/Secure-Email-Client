@@ -21,24 +21,12 @@
 {% block contents %}
 <form method="post" action="{% url 'mailapp_message_process' folder=folder uid=uid %}">
     {% csrf_token %}
-    <label for="use_decryption">Decrypt Email Content</label><br>
-    <input type="checkbox" name="use_decryption"><br>
-    <label for="decription_key">Decryption Key</label><br>
-    <input type="text" pattern=".{32}" name="decription_key" placeholder="decription key" /><br>
-    <br>
-    <label for="use_validation">Validate Signature</label><br>
-    <input type="checkbox" name="use_validation"><br>
-    <label for="validation_pub_key_a">Public Key (a)</label><br>
-    <input type="number" name="validation_pub_key_a" placeholder="public key (a)" /><br>
-    <label for="validation_pub_key_b">Public Key (b)</label><br>
-    <input type="number" name="validation_pub_key_b" placeholder="public key (b)" /><br>
-    <label for="validation_pub_key_p">Public Key (p)</label><br>
-    <input type="number" name="validation_pub_key_p" placeholder="public key (p)" /><br>
-    <label for="validation_pub_key_Qx">Public Key (Q.x)</label><br>
-    <input type="number" name="validation_pub_key_Qx" placeholder="public key (Q.x)" /><br>
-    <label for="validation_pub_key_Qy">Public Key (Q.y)</label><br>
-    <input type="number" name="validation_pub_key_Qy" placeholder="public key (Q.y)" /><br>
-    <br>
+    {% for field in form %}
+        <div>
+            {{ field.label_tag }} {{ field }}
+            <span style="color: red">{{ field.errors.0 }}</span>
+        </div>
+    {% endfor %}
     <input type="submit" name="submit" value="{% trans "Submit" %}" />
 </form>
 <form method="get" action="{% url 'mailapp-message' folder=folder uid=uid %}">

@@ -13,6 +13,7 @@ from ..mail_utils import serverLogin
 from themesapp.shortcuts import render
 from utils.config import WebpymailConfig
 from .. import msgactions
+from mailapp.forms import ProcessEmailForm
 
 # Other
 import hlimap
@@ -24,79 +25,88 @@ from tools.cipher import STRAIT, Mode
 @login_required
 def message_process(request, folder, uid):
     if request.method == 'POST':
-        # get message object
-        config = WebpymailConfig(request)
-        folder_name = base64.urlsafe_b64decode(str(folder))
-        M = serverLogin(request)
-        folder = M[folder_name]
-        message = folder[int(uid)]
+        form = ProcessEmailForm(request.POST)
+        if form.is_valid():
+            # get form data
+            form_data = form.cleaned_data
 
-        # Get text/plain part
-        text_plain = get_text_plain(message)
+            # get message object
+            config = WebpymailConfig(request)
+            folder_name = base64.urlsafe_b64decode(str(folder))
+            M = serverLogin(request)
+            folder = M[folder_name]
+            message = folder[int(uid)]
 
-        # decryption plugin
-        use_decryption = True if 'on' in request.POST.get('use_decryption', '') else False
-        message_text_dec = None
-        if use_decryption:
-            # decrypt
-            # decription_key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF'
-            decription_key = request.POST.get('decription_key', '').ljust(32, '0')[:32]
+            # Get text/plain part
+            text_plain = get_text_plain(message)
 
-            text_plain = base64.b64decode(text_plain)
-            cipher = STRAIT(decription_key, Mode.CBC)
-            iv, message_text_enc = text_plain[:8].decode('utf-8'), text_plain[8:]
-            message_text_dec = cipher.decrypt(message_text_enc, iv).decode('utf-8', 'ignore')
-            text_to_validate = message_text_dec
-        else:
-            text_to_validate = text_plain
+            # decryption plugin
+            use_decryption = form_data['use_decryption']
+            message_text_dec = None
+            decryption_error = None
+            if use_decryption:
+                try:
+                    # decrypt
+                    # decryption_key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF'
+                    decryption_key = form_data['decryption_key'].ljust(32, '0')[:32]
+                    text_plain = base64.b64decode(text_plain)
+                    cipher = STRAIT(decryption_key, Mode.CBC)
+                    iv, message_text_enc = text_plain[:8].decode('utf-8'), text_plain[8:]
+                    message_text_dec = cipher.decrypt(message_text_enc, iv).decode('utf-8', 'ignore')
+                    text_to_validate = message_text_dec
+                except Exception as e:
+                    decryption_error = 'Failed to decrypt email content: ' + str(e)
+                    text_to_validate = ''
+            else:
+                text_to_validate = text_plain
 
-        # validation plugin
-        use_validation = True if 'on' in request.POST.get('use_validation', '') else False
-        validation = None
-        validation_error = None
-        if use_validation:
+            # validation plugin
+            use_validation = form_data['use_validation']
+            validation = None
+            validation_error = None
+            if use_validation:
+                try:
+                    # validate
+                    a = form_data['validation_pub_key_a']
+                    b = form_data['validation_pub_key_b']
+                    p = form_data['validation_pub_key_p']
+                    Qx = form_data['validation_pub_key_Qx']
+                    Qy = form_data['validation_pub_key_Qy']
+                    print(a, b, p, Qx, Qy)
+                    print(type(a), type(b), type(p), type(Qx), type(Qy))
+                    # TODO: change check_digital_signature implementation
+                    validation = check_digital_signature(text_to_validate)
+                except Exception as e:
+                    validation_error = 'Failed to validate signature: ' + str(e)
+
+            # Check the query string
             try:
-                # validate
-                validation_pub_key_a = int(request.POST['validation_pub_key_a'])
-                validation_pub_key_b = int(request.POST['validation_pub_key_b'])
-                validation_pub_key_p = int(request.POST['validation_pub_key_p'])
-                validation_pub_key_Qx = int(request.POST['validation_pub_key_Qx'])
-                validation_pub_key_Qy = int(request.POST['validation_pub_key_Qy'])
-                # TODO: change check_digital_signature implementation
-                validation = check_digital_signature(text_to_validate)
-            except Exception as e:
-                validation_error = 'Error when validating signature: ' + str(e)
+                external_images = config.getboolean('message', 'external_images')
+                external_images = request.GET.get('external_images', external_images)
+                external_images = bool(int(external_images))
+            except ValueError:
+                external_images = config.getboolean('message', 'external_images')
 
-        # Check the query string
-        try:
-            external_images = config.getboolean('message', 'external_images')
-            external_images = request.GET.get('external_images', external_images)
-            external_images = bool(int(external_images))
-        except ValueError:
-            external_images = config.getboolean('message', 'external_images')
+            return render(request, 'mail/plugins/message_process.html', {
+                'folder': folder,
+                'message': message,
+                'show_images_inline': config.getboolean('message',
+                                                        'show_images_inline'),
+                'show_html': config.getboolean('message', 'show_html'),
+                'external_images': external_images,
+                'use_validation': use_validation,
+                'validation': validation,
+                'validation_error': validation_error,
+                'use_decryption': use_decryption,
+                'message_text_dec': message_text_dec,
+                'decryption_error': decryption_error,
+                })
+                
+    else:
+        form = ProcessEmailForm()
 
-        return render(request, 'mail/plugins/message_process.html', {
-            'folder': folder,
-            'message': message,
-            'show_images_inline': config.getboolean('message',
-                                                    'show_images_inline'),
-            'show_html': config.getboolean('message', 'show_html'),
-            'external_images': external_images,
-            'use_validation': use_validation,
-            'validation': validation,
-            'validation_error': validation_error,
-            'use_decryption': use_decryption,
-            'message_text_dec': message_text_dec,
-            })
-
-    elif request.method == 'GET':
-        return redirect('mailapp_message_process_form', folder=folder, uid=uid)
-
-
-@login_required
-def message_process_form(request, folder, uid):
-    if request.method == 'GET':
-        return render(request, 'mail/plugins/message_process_form.html', {
-            'folder': folder,
-            'uid': uid,
-            })
+    return render(request, 'mail/plugins/message_process_form.html', {
+        'folder': folder,
+        'uid': uid,
+        'form': form,
+        })

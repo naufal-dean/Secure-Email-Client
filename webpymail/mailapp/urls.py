@@ -67,8 +67,6 @@ urlpatterns += [
 urlpatterns += [
         url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/process-mail/$',
             plugin_message.message_process, name='mailapp_message_process'),
-        url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/process-mail-form/$',
-            plugin_message.message_process_form, name='mailapp_message_process_form'),
         ]
 
 # Compose messages:
