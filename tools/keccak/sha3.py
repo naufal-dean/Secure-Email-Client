@@ -31,13 +31,14 @@ def rotate_left(x, s):
     return ((np.uint64(x) << np.uint64(s)) ^ (np.uint64(x) >> np.uint64(64 - s)))
  
  
-class Sha3(object):
+class Sha3:
     # menggunakan standar fips202
     def __init__(self):
         # sha3 rate = 200-( 512 // 8)
         self.rate = 136
         # sha3 pad
         self.pad_byte = 0x06
+        # offset state
         self.cnt = 0
         self.state = np.zeros(25, dtype=np.uint64)
         self.buffer = np.zeros(200, dtype=np.uint8)
@@ -45,28 +46,32 @@ class Sha3(object):
     def absorb(self, b):
         length = len(b)
         i = 0
-        # untuk setiap blok berukuran rate, di-xor
         while length > 0:
             diff = self.rate - self.cnt
             to_be_absorbed = min(diff, length)
+            # untuk setiap blok berukuran rate, di-xor
             self.buffer[self.cnt:self.cnt + to_be_absorbed] ^= np.frombuffer(b[i:i+to_be_absorbed], dtype=np.uint8)
             self.cnt += to_be_absorbed
+            # menangani kalau sudah habis statenya
             if self.cnt == self.rate:
                 self.permute()
             length -= to_be_absorbed
             i += to_be_absorbed
     
     def squeeze(self, n):
-        b = b''
+        # inisialisasi z kosong
+        z = b''
         while n > 0:
             diff = self.rate - self.cnt
             to_be_squeezed = min(diff, n)
-            b += self.state.view(dtype=np.uint8)[self.cnt:self.cnt + to_be_squeezed].tobytes()
+            # append z dengan r bit pertama dari state
+            z += self.state.view(dtype=np.uint8)[self.cnt:self.cnt + to_be_squeezed].tobytes()
             self.cnt += to_be_squeezed
+            # menangani kalau sudah habis statenya
             if self.cnt == self.rate:
                 self.permute()
             n -= to_be_squeezed
-        return b
+        return z
     
     def pad(self):
         self.buffer[self.cnt] ^= self.pad_byte
@@ -85,7 +90,7 @@ class Sha3(object):
                     temp[j] ^= self.state[j + k]
             # Theta
             for j in range(5):
-                t = temp[(j + 4) % 5] ^ rotate_left(temp[(j + 1) % 5], 1)
+                t = rotate_left(temp[(j + 1) % 5], 1) ^ temp[(j + 4) % 5]
                 for k in range(0, 25, 5):
                     self.state[k + j] ^= t
             # Rho dan pi
@@ -98,13 +103,15 @@ class Sha3(object):
                 for k in range(5):
                     temp[k] = self.state[j + k]
                 for k in range(5):
-                    self.state[j + k] = temp[k] ^ ((~temp[(k + 1) % 5]) & temp[(k + 2) % 5])
+                    self.state[j + k] = (temp[(k + 2) % 5] & (~temp[(k + 1) % 5])) ^ temp[k]
             self.state[0] ^= ROUND_CONSTANTS[i]
+        # kembali ke 0 buat offset state pada absorb dan squeeze
         self.cnt = 0
         # 0 kan semua
         self.buffer[:] = 0
  
     def get_hex_digest(self, b):
+        # returns hex
         bytes_input = bytes(b.lower(), 'utf-8')
         self.absorb(unhexlify(hexlify(bytes_input)))
         self.pad()
@@ -112,6 +119,7 @@ class Sha3(object):
         return hexlify(ret)
     
     def get_int_digest(self, b):
+        # returns integer
         hex_digest = self.get_hex_digest(b)
         return int(hex_digest, 16)
 
