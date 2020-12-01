@@ -1,6 +1,6 @@
 import random
 
-from . import Point, ECC
+from . import Point, is_identity_point, ECC
 from .util import mod_inverse
 
 
@@ -46,7 +46,7 @@ class ECDSA:
         temp2 = self.curve.multiply(u2, self.curve.Q)
         x1, y1 = self.curve.add_points(temp1, temp2)
         # check if (x1, y1) == O
-        if self.curve.is_identity_point(Point(x1, y1)):
+        if is_identity_point(Point(x1, y1)):
             return False
         # check r == x1 mod n
         return r == x1 % self.curve.n

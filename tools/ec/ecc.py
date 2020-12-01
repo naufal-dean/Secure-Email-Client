@@ -1,6 +1,6 @@
 import random
 
-from . import Point
+from . import Point, get_identity_point, is_identity_point
 from .util import mod_inverse
 
 
@@ -26,32 +26,26 @@ class ECC:
                     result.append(Point(i, j))
         return result
 
-    def get_identity_point(self) -> Point:
-        return Point(float('inf'), float('inf'))
-
-    def is_identity_point(self, P: Point) -> bool:
-        return P == self.get_identity_point()
-
     def add_points(self, P: Point, Q: Point) -> Point:
         # TODO: remove
         assert isinstance(P, Point)
         assert isinstance(Q, Point)
 
         # addition with identity point
-        if self.is_identity_point(P):
+        if is_identity_point(P):
             return Q
-        if self.is_identity_point(Q):
+        if is_identity_point(Q):
             return P
         # calculate gradient m
         if P == Q:
             if (P.y == 0):
-                return self.get_identity_point()
+                return get_identity_point()
             else:
                 # m = ((3*(P.x**2) + self.a ) * pow(2 * P.y, -1, self.p)) % self.p
                 m = ((3 * (P.x ** 2) + self.a) * mod_inverse(2 * P.y, self.p)) % self.p
         else:
             if (P.x - Q.x) == 0:
-               return self.get_identity_point()
+               return get_identity_point()
             else:
                 # m = ((Q.y - P.y) * pow(Q.x - P.x, -1, self.p)) % self.p
                 m = ((Q.y - P.y) * mod_inverse(Q.x - P.x, self.p)) % self.p
@@ -64,7 +58,7 @@ class ECC:
         # TODO: remove
         assert isinstance(P, Point)
 
-        X, Q = P, self.get_identity_point()
+        X, Q = P, get_identity_point()
         while k:
             if k & 1:
                 Q = self.add_points(Q, X)
@@ -77,7 +71,7 @@ class ECC:
         self.d = random.randrange(1, self.n)
         # Q public key
         self.Q = self.multiply(self.d, self.G)
-        while (self.is_identity_point(self.Q) or (self.Q.x % self.n == 0)):
+        while (is_identity_point(self.Q) or (self.Q.x % self.n == 0)):
             self.d = random.randrange(1, self.n)
             self.Q = self.multiply(self.d, self.G)
 
