@@ -1,40 +1,38 @@
-from binascii import hexlify, unhexlify
-from functools import partial
- 
+from binascii import hexlify, unhexlify 
 import numpy as np
  
  
 RHO = [
-    1,  3,  6, 10, 15, 21,
-   28, 36, 45, 55,  2, 14,
-   27, 41, 56,  8, 25, 43,
-   62, 18, 39, 61, 20, 44]
+     1,  3,  6, 10, 15, 21,
+    28, 36, 45, 55,  2, 14,
+    27, 41, 56,  8, 25, 43,
+    62, 18, 39, 61, 20, 44]
 PI = [
-   10,  7, 11, 17, 18, 3,
-    5, 16,  8, 21, 24, 4,
-   15, 23, 19, 13, 12, 2,
-   20, 14, 22,  9,  6, 1]
+    10,  7, 11, 17, 18, 3,
+     5, 16,  8, 21, 24, 4,
+    15, 23, 19, 13, 12, 2,
+    20, 14, 22,  9,  6, 1]
 ROUND_CONSTANTS = np.array([
- 0x0000000000000001, 0x0000000000008082,
- 0x800000000000808a, 0x8000000080008000,
- 0x000000000000808b, 0x0000000080000001,
- 0x8000000080008081, 0x8000000000008009,
- 0x000000000000008a, 0x0000000000000088,
- 0x0000000080008009, 0x000000008000000a,
- 0x000000008000808b, 0x800000000000008b,
- 0x8000000000008089, 0x8000000000008003,
- 0x8000000000008002, 0x8000000000000080,
- 0x000000000000800a, 0x800000008000000a,
- 0x8000000080008081, 0x8000000000008080,
- 0x0000000080000001, 0x8000000080008008],
- dtype=np.uint64)
+    0x0000000000000001, 0x0000000000008082,
+    0x800000000000808a, 0x8000000080008000,
+    0x000000000000808b, 0x0000000080000001,
+    0x8000000080008081, 0x8000000000008009,
+    0x000000000000008a, 0x0000000000000088,
+    0x0000000080008009, 0x000000008000000a,
+    0x000000008000808b, 0x800000000000008b,
+    0x8000000000008089, 0x8000000000008003,
+    0x8000000000008002, 0x8000000000000080,
+    0x000000000000800a, 0x800000008000000a,
+    0x8000000080008081, 0x8000000000008080,
+    0x0000000080000001, 0x8000000080008008],
+    dtype=np.uint64)
  
 def rotate_left(x, s):
     return ((np.uint64(x) << np.uint64(s)) ^ (np.uint64(x) >> np.uint64(64 - s)))
  
  
 class Sha3(object):
-    
+    # menggunakan standar fips202
     def __init__(self):
         # sha3 rate = 200-( 512 // 8)
         self.rate = 136
@@ -106,12 +104,16 @@ class Sha3(object):
         # 0 kan semua
         self.buffer[:] = 0
  
-    def hash(self, b):
+    def get_hex_digest(self, b):
         bytes_input = bytes(b.lower(), 'utf-8')
         self.absorb(unhexlify(hexlify(bytes_input)))
         self.pad()
         ret = self.squeeze((200 - self.rate) // 2)
         return hexlify(ret)
+    
+    def get_int_digest(self, b):
+        hex_digest = self.get_hex_digest(b)
+        return int(hex_digest, 16)
 
 
 
@@ -121,7 +123,9 @@ if __name__ == '__main__':
     msg = "memez is luv"
     digest = "6b71180fa829da6775e6b00193ad033593156eb0e34c0ffbd43103615025ccf6"
     d = bytes(digest.lower(), 'utf-8')
-    h = Sha3_256.hash(msg)
+    h = Sha3_256.get_hex_digest(msg)
+    i = Sha3_256.get_int_digest(msg)
+    print(i)
     if h != d:
         print("salah")
         print(h, digest.lower())
