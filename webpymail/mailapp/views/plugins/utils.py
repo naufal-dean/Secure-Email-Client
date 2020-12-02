@@ -8,6 +8,7 @@ def get_text_plain(message):
     for part in message.bodystructure.serial_message():
         if part.is_text() and part.is_plain():
             text += message.part(part)
+            break
     return text
 
 

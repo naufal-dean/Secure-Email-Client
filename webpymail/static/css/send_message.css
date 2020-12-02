@@ -16,11 +16,17 @@ table.msg_form {
     width: 100%;
 }
 
+table tr > th {
+    font-size: 0.9em;
+    font-weight: normal;
+    vertical-align: top;
+}
+
 #server_error {
     border: 1px solid red;
     background-color: #ffe0e0;
     margin-bottom: 0.5em;
-    
+
 }
 
 #server_error h1 {
@@ -32,4 +38,21 @@ table.msg_form {
     padding: 0;
     padding-left: 2em;
     font-size: 0.8em;
+}
+
+.compose_action_container {
+    padding: 10px;
+    display: flex;
+}
+
+.compose_action_container_left {
+    display: flex;
+    justify-content: flex-start;
+    flex: 1;
+}
+
+.compose_action_container_right {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
 }

@@ -42,9 +42,18 @@
 {% endfor %}
 </ul></td></tr>
 {% endif %}
-
-<tr><td><input type="submit" name="cancel" value="{% trans "Cancel" %}" /></td>
-<td align="right"><input type="submit" name="upload" value="{% trans "Upload files" %}" /><input type="submit" value="{% trans "Send" %}" /></td></tr>
+<!-- <tr><td><input type="submit" name="cancel" value="{% trans "Cancel" %}" /></td>
+<td align="right"><input type="submit" name="upload" value="{% trans "Upload files" %}" /><input type="submit" value="{% trans "Send" %}" /></td></tr> -->
 </table>
+
+<div class="compose_action_container">
+    <div class="compose_action_container_left">
+        <input type="submit" name="cancel" value="{% trans "Cancel" %}" />
+    </div>
+    <div class="compose_action_container_right">
+        <input type="submit" name="upload" value="{% trans "Upload files" %}" />
+        <input type="submit" value="{% trans "Send" %}" />
+    </div>
+</div>
 </form>
 {% endblock %}
