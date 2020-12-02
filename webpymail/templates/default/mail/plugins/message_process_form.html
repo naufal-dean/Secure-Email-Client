@@ -10,13 +10,13 @@
 {% endblock %}
 
 {% block extra_menus %}
-<a href="{% url 'folder_list' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px" title="{% trans "Folder List" %}"></a>
-<a href="{% url 'mailapp_send_message' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}"></a>
+<a href="{% url 'folder_list' %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px" title="{% trans "Folder List" %}">
+</a>
+<a href="{% url 'mailapp_send_message' %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}">
+</a>
 &nbsp;
-{% if folder.have_messages %}
-<img id="tools_menu_toggle" class="menu_button" src="{{ STATIC_URL }}img/tools.svg" width="32px" height="32px" title="{% trans "Message list tools menu" %}">
-{% endif %}
-<img id="filter_menu_toggle" class="menu_button" src="{{ STATIC_URL }}img/view-filter.svg" width="32px" height="32px" title="{% trans "Message list filter menu" %}">
 {% endblock %}
 
 {% block contents %}

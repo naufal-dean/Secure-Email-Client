@@ -128,7 +128,7 @@ class ECC:
         pub = open(filename + ".pub", "w")
         pub.write(str(self.a) + " " + str(self.b) + " " + str(self.p) + " " + str(self.n) + "\n")
         pub.write(str(self.G.x) + " " + str(self.G.y) + "\n")
-        pub.write(str(self.Q.x) + " " + str(self.Q.x))
+        pub.write(str(self.Q.x) + " " + str(self.Q.y))
         pub.close()
 
     @classmethod
