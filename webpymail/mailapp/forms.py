@@ -250,6 +250,30 @@ class ComposeMailForm(forms.Form):
         required=False,
     )
 
+    signature_pri_key_n = forms.IntegerField(
+        label=_('Private Key (n)'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Private key n in ec y^2 = x^3 + ax + b mod p'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    signature_pri_key_Gx = forms.IntegerField(
+        label=_('Private Key (G.x)'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Base point in ec y^2 = x^3 + ax + b mod p'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    signature_pri_key_Gy = forms.IntegerField(
+        label=_('Private Key (G.y)'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Base point in ec y^2 = x^3 + ax + b mod p'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
     subject = forms.CharField(
         max_length=100,
         label=_('Subject'),

@@ -58,6 +58,8 @@ from mailapp.views.mail_utils import (serverLogin, send_mail,
 
 # Plugin Imports
 from tools.cipher import STRAIT, Mode
+from tools.ec import ECC, ECDSA, Point
+from tools.keccak import Sha3
 
 # CONST
 PLAIN = 1
@@ -260,10 +262,25 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
         if use_signature:
             # TODO: implement signature using ECDSA
             # test using hash
-            from hashlib import md5
-            hash = md5(message_text).hexdigest().encode('utf-8')
+            # from hashlib import md5
+            # hash = md5(message_text).hexdigest().encode('utf-8')
+            a = form_data['signature_pri_key_a']
+            b = form_data['signature_pri_key_b']
+            p = form_data['signature_pri_key_p']
+            d = form_data['signature_pri_key_d']
+            n = form_data['signature_pri_key_n']
+            Gx = form_data['signature_pri_key_Gx']
+            Gy = form_data['signature_pri_key_Gy']
+
+            print(message_text)
+            hash_int = Sha3().get_int_digest(message_text.decode('utf-8'))
+            curve = ECC(a,b,p,n,Point(Gx, Gy))
+            curve.set_d(d)
+            ecdsa = ECDSA(curve)
+            r, s = ecdsa.sign(hash_int)
+            # curve = ECC(a,b,p,n,G)
             # append to message_text
-            message_text += b'\n\n' + b'<ds>' + hash + b'</ds>'
+            message_text += b'\n\n' + b'<ds>' + bytes( (str(r) + "," + str(s)), 'utf-8') + b'</ds>'
 
         # encryption plugin
         use_encryption = form_data['use_encryption']
