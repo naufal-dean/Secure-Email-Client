@@ -29,6 +29,9 @@ class ECC:
         if auto_gen_key:
             self.generate_key()
 
+    def set_d(self, d:int):
+        self.d = d
+    
     def generate_group(self) -> list:
         result = []
         for i in range(self.p):
