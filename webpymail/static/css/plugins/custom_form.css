@@ -27,6 +27,16 @@
 
 }
 
+.form_value > input[type='checkbox'] {
+  min-height: 15px;
+  min-width: 15px;
+}
+
+.form_error {
+  color: red;
+  font-size: 0.75em;
+}
+
 @media only screen and (max-width: 800px) {
   .form_action_container > div {
     margin-left:auto;

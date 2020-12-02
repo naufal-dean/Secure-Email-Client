@@ -26,8 +26,8 @@
         <div class="form_field">
             <div class="form_label">{{ field.label_tag }}</div>
             <div class="form_value">
-                {{ field }}
-                <span style="color: red">{{ field.errors.0 }}</span>
+                {{ field }}<br>
+                <span class="form_error">{{ field.errors.0 }}</span>
             </div>
         </div>
     {% endfor %}

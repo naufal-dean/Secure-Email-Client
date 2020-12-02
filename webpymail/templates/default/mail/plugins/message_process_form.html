@@ -24,17 +24,15 @@
 <form id="message_process_form" method="post" enctype="multipart/form-data" action="{% url 'mailapp_message_process' folder=folder uid=uid %}">
     {% csrf_token %}
     <div class="form_container">
-        <table class="form_table">
-        {% for field in form %}
-            <tr class="form_row">
-                <th>{{ field.label_tag }}</th>
-                <td>
-                    {{ field }}
-                    <span style="color: red">{{ field.errors.0 }}</span>
-                </td>
-            </tr>
-        {% endfor %}
-        </table>
+    {% for field in form %}
+        <div class="form_field">
+            <div class="form_label">{{ field.label_tag }}</div>
+            <div class="form_value">
+                {{ field }}<br>
+                <span class="form_error">{{ field.errors.0 }}</span>
+            </div>
+        </div>
+    {% endfor %}
     </div>
 </form>
 
