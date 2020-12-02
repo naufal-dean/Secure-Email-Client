@@ -1,11 +1,18 @@
-.form_container {
-    padding: 30px 15px;
+/* Result page */
+div.validation_container > p {
+  font-size: 0.8em;
+  max-width: 600px;
+  padding: 1em 0;
+  margin: 0;
 }
 
-.form_table {
-
-}
-
-.form_row {
-
+div.decryption_container > pre {
+  max-width: 600px;
+  padding: 1em 0;
+  margin: 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
 }

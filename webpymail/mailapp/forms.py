@@ -493,13 +493,13 @@ class GenerateEccKeyForm(forms.Form):
     )
 
     curve_base_Gx = forms.IntegerField(
-        label=_('Curve Base Point (G), optional'),
+        label=_('Curve Base Point (G.x), optional'),
         widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )
 
     curve_base_Gy = forms.IntegerField(
-        label=_('Curve Base Point (G), optional'),
+        label=_('Curve Base Point (G.y), optional'),
         widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
         required=False,
     )

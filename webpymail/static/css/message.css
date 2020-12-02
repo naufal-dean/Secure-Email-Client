@@ -55,6 +55,15 @@ div.message_body {
     padding: 0.2em;
 }
 
+div.message_body > pre {
+    max-width: 600px;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+
 div.attach_link {
     border: 1px solid darkgray;
     background-color: #eeeee6;

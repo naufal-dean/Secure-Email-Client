@@ -5,7 +5,7 @@
 {% block inpage_title %}{{ folder }}{% endblock %}
 
 {% block headercontent %}
-<!-- <link href="{{ STATIC_URL }}css/message_list.css" rel="stylesheet" type="text/css"></link> -->
+<link href="{{ STATIC_URL }}css/plugins/custom_form.css" rel="stylesheet" type="text/css"></link>
 {% endblock %}
 
 {% block extra_menus %}
@@ -23,8 +23,8 @@
     {% csrf_token %}
     <div class="form_container">
     {% for field in form %}
-        <div class="form_field" style="display: flex; flex-wrap: wrap;">
-            <div class="form_label" style="min-width: 300px">{{ field.label_tag }}</div>
+        <div class="form_field">
+            <div class="form_label">{{ field.label_tag }}</div>
             <div class="form_value">
                 {{ field }}
                 <span style="color: red">{{ field.errors.0 }}</span>
@@ -32,11 +32,15 @@
         </div>
     {% endfor %}
     </div>
-    <input type="submit" name="generate" value="{% trans "Generate Key" %}" />
-    <input type="submit" name="download" value="{% trans "Download Generated Key" %}" />
+    <div class="form_action_container">
+        <div>
+            <input type="submit" name="generate" value="{% trans "Generate Key" %}" />
+            <input type="submit" name="download" value="{% trans "Download Generated Key" %}" />
+        </div>
+    </div>
     <div>
     {% if error_message != None %}
-        <span style="color: red">{{ error_message }}</span>      
+        <span style="color: red">{{ error_message }}</span>
     {% endif %}
     </div>
 </form>

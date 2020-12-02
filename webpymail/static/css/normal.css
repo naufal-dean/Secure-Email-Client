@@ -129,6 +129,15 @@ div#menu_back {
 div#main_menu {
 }
 
+
+/* Main toolbar media query */
+
+@media only screen and (max-width: 600px) {
+  #toolbar_main h1 {
+    display: none;
+  }
+}
+
 /**
  * Footer
  **/

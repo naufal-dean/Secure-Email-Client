@@ -169,7 +169,7 @@ class PartTextNode(template.Node):
     def sanitize_text(self, text):
         text = escape(text)
         text = bleach.linkify(text)
-        text = wrap_lines(text, 80)
+        # text = wrap_lines(text, 80)
         return text
 
     def sanitize_html(self, message, part, external_images):

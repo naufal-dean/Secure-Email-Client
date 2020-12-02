@@ -9,6 +9,8 @@
 {% endblock %}
 
 {% block extra_menus %}
+<a href="{% url 'mailapp_generate_ecc_key' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/key.png" width="32px" height="32px" title="{% trans "Generate ECC Key" %}"></a>
+&nbsp;
 <a href="{% url 'folder_list' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px" title="{% trans "Folder List" %}"></a>
 <a href="{% url 'mailapp_send_message' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}"></a>
 &nbsp;

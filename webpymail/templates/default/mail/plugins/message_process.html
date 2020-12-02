@@ -5,6 +5,7 @@
 
 {% block headercontent %}
     <link href="{{ STATIC_URL }}css/message.css" rel="stylesheet" type="text/css">
+    <link href="{{ STATIC_URL }}css/plugins/message_process.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block inpage_title %}{% trans "Message" %}{% endblock %}
@@ -39,21 +40,21 @@
 
   {% if use_validation %}
   {% if validation_error != None %}
-      <div style="background-color: pink">{{ validation_error }}</div>
+      <div class="validation_container" style="background-color: pink"><p>{{ validation_error }}</p></div>
   {% else %}
       {% if validation %}
-      <div style="background-color: cyan">Digital Signature is VALID!</div>
+      <div class="validation_container" style="background-color: cyan"><p>Digital Signature is VALID!</p></div>
       {% else %}
-      <div style="background-color: pink">Digital Signature is INVALID!</div>
+      <div class="validation_container" style="background-color: pink"><p>Digital Signature is INVALID!</p></div>
       {% endif %}
   {% endif %}
   {% endif %}
 
   {% if use_decryption %}
   {% if decryption_error != None %}
-      <div style="background-color: pink">{{ decryption_error }}</div>
+      <div class="decryption_container" style="background-color: pink">{{ decryption_error }}</div>
   {% else %}
-      <div style="background-color: palegreen"><pre>{{ message_text_dec }}</pre></div>
+      <div class="decryption_container" style="background-color: palegreen"><pre>{{ message_text_dec }}</pre></div>
   {% endif %}
   {% endif %}
 
