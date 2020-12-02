@@ -287,13 +287,13 @@ class ComposeMailForm(forms.Form):
         signature_pri_key_p = cleaned_data.get('signature_pri_key_p')
         signature_pri_key_d = cleaned_data.get('signature_pri_key_d')
         if use_signature:
-            if not signature_pri_key_a:
+            if signature_pri_key_a is None:
                 self.add_error('signature_pri_key_a', 'This field is required to use signature.')
-            if not signature_pri_key_b:
+            if signature_pri_key_b is None:
                 self.add_error('signature_pri_key_b', 'This field is required to use signature.')
-            if not signature_pri_key_p:
+            if signature_pri_key_p is None:
                 self.add_error('signature_pri_key_p', 'This field is required to use signature.')
-            if not signature_pri_key_d:
+            if signature_pri_key_d is None:
                 self.add_error('signature_pri_key_d', 'This field is required to use signature.')
 
 MESSAGE_ACTIONS = ((0, _('Choose one action')),
@@ -385,15 +385,15 @@ class ProcessEmailForm(forms.Form):
         validation_pub_key_Qx = cleaned_data.get('validation_pub_key_Qx')
         validation_pub_key_Qy = cleaned_data.get('validation_pub_key_Qy')
         if use_validation:
-            if not validation_pub_key_a:
+            if validation_pub_key_a is None:
                 self.add_error('validation_pub_key_a', 'This field is required to use validation.')
-            if not validation_pub_key_b:
+            if validation_pub_key_b is None:
                 self.add_error('validation_pub_key_b', 'This field is required to use validation.')
-            if not validation_pub_key_p:
+            if validation_pub_key_p is None:
                 self.add_error('validation_pub_key_p', 'This field is required to use validation.')
-            if not validation_pub_key_Qx:
+            if validation_pub_key_Qx is None:
                 self.add_error('validation_pub_key_Qx', 'This field is required to use validation.')
-            if not validation_pub_key_Qy:
+            if validation_pub_key_Qy is None:
                 self.add_error('validation_pub_key_Qy', 'This field is required to use validation.')
 
 
