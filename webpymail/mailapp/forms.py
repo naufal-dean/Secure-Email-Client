@@ -274,6 +274,13 @@ class ComposeMailForm(forms.Form):
         required=False,
     )
 
+    signature_pri_key_file = forms.FileField(
+        label=_('Private Key File'),
+        help_text='<div class=\"helptext\">%s</div>' %
+        _('Private key file used to sign message. If selected, other private key form will be ignored.'),
+        required=False,
+    )
+
     subject = forms.CharField(
         max_length=100,
         label=_('Subject'),
@@ -310,15 +317,26 @@ class ComposeMailForm(forms.Form):
         signature_pri_key_b = cleaned_data.get('signature_pri_key_b')
         signature_pri_key_p = cleaned_data.get('signature_pri_key_p')
         signature_pri_key_d = cleaned_data.get('signature_pri_key_d')
+        signature_pri_key_n = cleaned_data.get('signature_pri_key_n')
+        signature_pri_key_Gx = cleaned_data.get('signature_pri_key_Gx')
+        signature_pri_key_Gy = cleaned_data.get('signature_pri_key_Gy')
+        signature_pri_key_file = cleaned_data.get('signature_pri_key_file')
         if use_signature:
-            if signature_pri_key_a is None:
-                self.add_error('signature_pri_key_a', 'This field is required to use signature.')
-            if signature_pri_key_b is None:
-                self.add_error('signature_pri_key_b', 'This field is required to use signature.')
-            if signature_pri_key_p is None:
-                self.add_error('signature_pri_key_p', 'This field is required to use signature.')
-            if signature_pri_key_d is None:
-                self.add_error('signature_pri_key_d', 'This field is required to use signature.')
+            if signature_pri_key_file is None:
+                if signature_pri_key_a is None:
+                    self.add_error('signature_pri_key_a', 'This field is required to use signature.')
+                if signature_pri_key_b is None:
+                    self.add_error('signature_pri_key_b', 'This field is required to use signature.')
+                if signature_pri_key_p is None:
+                    self.add_error('signature_pri_key_p', 'This field is required to use signature.')
+                if signature_pri_key_d is None:
+                    self.add_error('signature_pri_key_d', 'This field is required to use signature.')
+                if signature_pri_key_n is None:
+                    self.add_error('signature_pri_key_n', 'This field is required to use signature.')
+                if signature_pri_key_Gx is None:
+                    self.add_error('signature_pri_key_Gx', 'This field is required to use signature.')
+                if signature_pri_key_Gy is None:
+                    self.add_error('signature_pri_key_Gy', 'This field is required to use signature.')
 
 MESSAGE_ACTIONS = ((0, _('Choose one action')),
                    (1, _('Mark read')),
@@ -412,6 +430,11 @@ class ProcessEmailForm(forms.Form):
         required=False,
     )
 
+    validation_pub_key_file = forms.FileField(
+        label=_('Public Key File'),
+        required=False,
+    )
+
     def clean(self):
         cleaned_data = super(ProcessEmailForm, self).clean()
         # validate decryption forms
@@ -426,17 +449,28 @@ class ProcessEmailForm(forms.Form):
         validation_pub_key_p = cleaned_data.get('validation_pub_key_p')
         validation_pub_key_Qx = cleaned_data.get('validation_pub_key_Qx')
         validation_pub_key_Qy = cleaned_data.get('validation_pub_key_Qy')
+        validation_pub_key_n = cleaned_data.get('validation_pub_key_n')
+        validation_pub_key_Gx = cleaned_data.get('validation_pub_key_Gx')
+        validation_pub_key_Gy = cleaned_data.get('validation_pub_key_Gy')
+        validation_pub_key_file = cleaned_data.get('validation_pub_key_file')
         if use_validation:
-            if validation_pub_key_a is None:
-                self.add_error('validation_pub_key_a', 'This field is required to use validation.')
-            if validation_pub_key_b is None:
-                self.add_error('validation_pub_key_b', 'This field is required to use validation.')
-            if validation_pub_key_p is None:
-                self.add_error('validation_pub_key_p', 'This field is required to use validation.')
-            if validation_pub_key_Qx is None:
-                self.add_error('validation_pub_key_Qx', 'This field is required to use validation.')
-            if validation_pub_key_Qy is None:
-                self.add_error('validation_pub_key_Qy', 'This field is required to use validation.')
+            if validation_pub_key_file is None:
+                if validation_pub_key_a is None:
+                    self.add_error('validation_pub_key_a', 'This field is required to use validation.')
+                if validation_pub_key_b is None:
+                    self.add_error('validation_pub_key_b', 'This field is required to use validation.')
+                if validation_pub_key_p is None:
+                    self.add_error('validation_pub_key_p', 'This field is required to use validation.')
+                if validation_pub_key_Qx is None:
+                    self.add_error('validation_pub_key_Qx', 'This field is required to use validation.')
+                if validation_pub_key_Qy is None:
+                    self.add_error('validation_pub_key_Qy', 'This field is required to use validation.')
+                if validation_pub_key_n is None:
+                    self.add_error('validation_pub_key_n', 'This field is required to use validation.')
+                if validation_pub_key_Gx is None:
+                    self.add_error('validation_pub_key_Gx', 'This field is required to use validation.')
+                if validation_pub_key_Gy is None:
+                    self.add_error('validation_pub_key_Gy', 'This field is required to use validation.')
 
 
 class GenerateEccKeyForm(forms.Form):

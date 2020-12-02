@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block contents %}
-<form id="message_process_form" method="post" action="{% url 'mailapp_message_process' folder=folder uid=uid %}">
+<form id="message_process_form" method="post" enctype="multipart/form-data" action="{% url 'mailapp_message_process' folder=folder uid=uid %}">
     {% csrf_token %}
     <div class="form_container">
         <table class="form_table">

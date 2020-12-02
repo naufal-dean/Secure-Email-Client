@@ -1,5 +1,6 @@
 # Global Imports
 import base64
+import os
 # Django:
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -20,12 +21,13 @@ import hlimap
 
 # Plugin Imports
 from tools.cipher import STRAIT, Mode
+from tools.ec import ECC
 
 
 @login_required
 def message_process(request, folder, uid):
     if request.method == 'POST':
-        form = ProcessEmailForm(request.POST)
+        form = ProcessEmailForm(request.POST, request.FILES)
         if form.is_valid():
             # get form data
             form_data = form.cleaned_data
@@ -67,17 +69,36 @@ def message_process(request, folder, uid):
             if use_validation:
                 try:
                     # validate
-                    a = form_data['validation_pub_key_a']
-                    b = form_data['validation_pub_key_b']
-                    p = form_data['validation_pub_key_p']
-                    Qx = form_data['validation_pub_key_Qx']
-                    Qy = form_data['validation_pub_key_Qy']
-                    n = form_data['validation_pub_key_n']
-                    Gx = form_data['validation_pub_key_Gx']
-                    Gy = form_data['validation_pub_key_Gy']
-                    print(a, b, p, Qx, Qy)
-                    print(type(a), type(b), type(p), type(Qx), type(Qy))
-                    # TODO: change check_digital_signature implementation
+                    if form_data['validation_pub_key_file']:
+                        # save to temporary file
+                        folder_path = os.path.join('mailapp', 'savedkeys')
+                        if not os.path.exists(folder_path):
+                            os.makedirs(folder_path)
+                        pub_key_path = os.path.join(folder_path, 'uploaded.pub')
+                        with form_data['validation_pub_key_file'] as fup, open(pub_key_path, 'wb') as ftemp:
+                            ftemp.write(fup.read())
+                        # load key
+                        try:
+                            ecc = ECC.load_key(pub_key_path, True)
+                        except Exception as e:
+                            raise Exception('Load public key from file failed')
+                        else:
+                            a = ecc.a
+                            b = ecc.b
+                            p = ecc.p
+                            Qx, Qy = ecc.Q
+                            n = ecc.n
+                            Gx, Gy = ecc.G
+                    else:
+                        a = form_data['validation_pub_key_a']
+                        b = form_data['validation_pub_key_b']
+                        p = form_data['validation_pub_key_p']
+                        Qx = form_data['validation_pub_key_Qx']
+                        Qy = form_data['validation_pub_key_Qy']
+                        n = form_data['validation_pub_key_n']
+                        Gx = form_data['validation_pub_key_Gx']
+                        Gy = form_data['validation_pub_key_Gy']
+                    # validate digital signature
                     validation = check_digital_signature(text_to_validate, a, b, p, Qx, Qy, n, Gx, Gy)
                 except Exception as e:
                     validation_error = 'Failed to validate signature: ' + str(e)

@@ -225,7 +225,15 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
                                         for Xi in uploaded_files.id_list()]
                                        )
     user_profile = request.user.userprofile
-    form = ComposeMailForm(new_data, request=request)
+
+    temp_signature_pri_key_file = request.FILES.get('signature_pri_key_file', None)
+    if temp_signature_pri_key_file is not None:
+        form = ComposeMailForm(new_data, {
+            'signature_pri_key_file': temp_signature_pri_key_file
+        }, request=request)
+    else:
+        form = ComposeMailForm(new_data, request=request)
+
     if 'upload' in new_data:
         other_action = True
 
@@ -261,17 +269,30 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
         # signature plugin
         use_signature = form_data['use_signature']
         if use_signature:
-            # TODO: implement signature using ECDSA
-            # test using hash
-            # from hashlib import md5
-            # hash = md5(message_text).hexdigest().encode('utf-8')
-            a = form_data['signature_pri_key_a']
-            b = form_data['signature_pri_key_b']
-            p = form_data['signature_pri_key_p']
-            d = form_data['signature_pri_key_d']
-            n = form_data['signature_pri_key_n']
-            Gx = form_data['signature_pri_key_Gx']
-            Gy = form_data['signature_pri_key_Gy']
+            if form_data['signature_pri_key_file']:
+                # save to temporary file
+                folder_path = os.path.join('mailapp', 'savedkeys')
+                if not os.path.exists(folder_path):
+                    os.makedirs(folder_path)
+                pri_key_path = os.path.join(folder_path, 'uploaded.pri')
+                with form_data['signature_pri_key_file'] as fup, open(pri_key_path, 'wb') as ftemp:
+                    ftemp.write(fup.read())
+                # load key
+                ecc = ECC.load_key(pri_key_path, False)
+                a = ecc.a
+                b = ecc.b
+                p = ecc.p
+                d = ecc.d
+                n = ecc.n
+                Gx, Gy = ecc.G
+            else:
+                a = form_data['signature_pri_key_a']
+                b = form_data['signature_pri_key_b']
+                p = form_data['signature_pri_key_p']
+                d = form_data['signature_pri_key_d']
+                n = form_data['signature_pri_key_n']
+                Gx = form_data['signature_pri_key_Gx']
+                Gy = form_data['signature_pri_key_Gy']
 
             message_text += b'\n\n' + b'<ds>' + generate_digital_signature(message_text, a, b, p, d, n, Gx, Gy) + b'</ds>'
 
