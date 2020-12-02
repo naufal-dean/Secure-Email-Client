@@ -31,6 +31,9 @@ class ECC:
 
     def set_d(self, d:int):
         self.d = d
+
+    def set_Q(self, Q:Point):
+        self.Q = Q
     
     def generate_group(self) -> list:
         result = []

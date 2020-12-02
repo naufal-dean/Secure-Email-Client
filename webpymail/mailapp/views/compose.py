@@ -60,6 +60,7 @@ from mailapp.views.mail_utils import (serverLogin, send_mail,
 from tools.cipher import STRAIT, Mode
 from tools.ec import ECC, ECDSA, Point
 from tools.keccak import Sha3
+from .plugins.utils import generate_digital_signature
 
 # CONST
 PLAIN = 1
@@ -272,15 +273,7 @@ def send_message(request, text='', to_addr='', cc_addr='', bcc_addr='',
             Gx = form_data['signature_pri_key_Gx']
             Gy = form_data['signature_pri_key_Gy']
 
-            print(message_text)
-            hash_int = Sha3().get_int_digest(message_text.decode('utf-8'))
-            curve = ECC(a,b,p,n,Point(Gx, Gy))
-            curve.set_d(d)
-            ecdsa = ECDSA(curve)
-            r, s = ecdsa.sign(hash_int)
-            # curve = ECC(a,b,p,n,G)
-            # append to message_text
-            message_text += b'\n\n' + b'<ds>' + bytes( (str(r) + "," + str(s)), 'utf-8') + b'</ds>'
+            message_text += b'\n\n' + b'<ds>' + generate_digital_signature(message_text, a, b, p, d, n, Gx, Gy) + b'</ds>'
 
         # encryption plugin
         use_encryption = form_data['use_encryption']

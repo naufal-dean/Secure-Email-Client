@@ -72,10 +72,13 @@ def message_process(request, folder, uid):
                     p = form_data['validation_pub_key_p']
                     Qx = form_data['validation_pub_key_Qx']
                     Qy = form_data['validation_pub_key_Qy']
+                    n = form_data['validation_pub_key_n']
+                    Gx = form_data['validation_pub_key_Gx']
+                    Gy = form_data['validation_pub_key_Gy']
                     print(a, b, p, Qx, Qy)
                     print(type(a), type(b), type(p), type(Qx), type(Qy))
                     # TODO: change check_digital_signature implementation
-                    validation = check_digital_signature(text_to_validate)
+                    validation = check_digital_signature(text_to_validate, a, b, p, Qx, Qy, n, Gx, Gy)
                 except Exception as e:
                     validation_error = 'Failed to validate signature: ' + str(e)
 

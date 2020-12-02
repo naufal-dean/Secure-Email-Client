@@ -394,6 +394,24 @@ class ProcessEmailForm(forms.Form):
         required=False,
     )
 
+    validation_pub_key_n = forms.IntegerField(
+        label=_('Public Key (n)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    validation_pub_key_Gx = forms.IntegerField(
+        label=_('Public Key (G.x)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    validation_pub_key_Gy = forms.IntegerField(
+        label=_('Public Key (G.y)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
     def clean(self):
         cleaned_data = super(ProcessEmailForm, self).clean()
         # validate decryption forms
