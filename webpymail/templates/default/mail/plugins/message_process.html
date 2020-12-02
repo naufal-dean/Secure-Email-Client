@@ -10,27 +10,16 @@
 {% block inpage_title %}{% trans "Message" %}{% endblock %}
 
 {% block extra_menus %}
-<a href="{% url 'mailapp_reply_message' folder=message.folder.url uid=message.uid %}" title="{% trans "Reply" %}">
-  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-reply-sender.svg" width="32px" height="32px">
-</a>
-<a href="{% url 'mailapp_reply_all_message' folder=message.folder.url uid=message.uid %}" title="{% trans "Reply All" %}">
-  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-reply-all.svg" width="32px" height="32px">
-</a>
-<a href="{% url 'mailapp_forward_inline_message' folder=message.folder.url uid=message.uid %}" title="{% trans "Forward" %}">
-  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-forward.svg" width="32px" height="32px">
-</a>
-<a href="{% url 'mailapp_forward_message' folder=message.folder.url uid=message.uid %}" title="{% trans "Forward as Attachment" %}">
-  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-forward-attachment.svg" width="32px" height="32px">
-</a>
-
-&nbsp;&nbsp;
 <a href="{% url 'folder_list' %}" title="{% trans "Folder List" %}">
   <img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px">
 </a>
 <a href="{% url 'message_list' folder.url %}">
-  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new-list.svg" width="32px" height="32px" title="{% trans "Message List" %}"></a>
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new-list.svg" width="32px" height="32px" title="{% trans "Message List" %}">
+</a>
+<a href="{% url 'mailapp_send_message' %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}">
+</a>
 &nbsp;
-<a href="{% url 'mailapp_send_message' %}"><img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}"></a>
 {% endblock %}
 
 {% block main_menu %}
