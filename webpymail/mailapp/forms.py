@@ -395,3 +395,59 @@ class ProcessEmailForm(forms.Form):
                 self.add_error('validation_pub_key_Qx', 'This field is required to use validation.')
             if not validation_pub_key_Qy:
                 self.add_error('validation_pub_key_Qy', 'This field is required to use validation.')
+
+
+class GenerateEccKeyForm(forms.Form):
+    curve_param_a = forms.IntegerField(
+        label=_('Curve Parameter (a)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=True,
+    )
+
+    curve_param_b = forms.IntegerField(
+        label=_('Curve Parameter (b)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=True,
+    )
+
+    curve_param_p = forms.IntegerField(
+        label=_('Curve Parameter (p)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=True,
+    )
+
+    curve_base_Gx = forms.IntegerField(
+        label=_('Curve Base Point (G), optional'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    curve_base_Gy = forms.IntegerField(
+        label=_('Curve Base Point (G), optional'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    curve_order_n = forms.IntegerField(
+        label=_('Curve Order (n), optional'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN}),
+        required=False,
+    )
+
+    pri_key_d = forms.IntegerField(
+        label=_('Generated Private Key (d)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN, 'readonly':'readonly'}),
+        required=False,
+    )
+
+    pub_key_Qx = forms.IntegerField(
+        label=_('Generated Public Key (Q.x)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN, 'readonly':'readonly'}),
+        required=False,
+    )
+
+    pub_key_Qy = forms.IntegerField(
+        label=_('Generated Public Key (Q.y)'),
+        widget=forms.TextInput(attrs={'size': settings.SINGLELINELEN, 'readonly':'readonly'}),
+        required=False,
+    )

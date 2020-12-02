@@ -1,0 +1,49 @@
+{% load loader_tags %}{% extends 'base/base.html' %}
+{% load i18n %}
+{% load webtags %}
+
+{% block inpage_title %}{{ folder }}{% endblock %}
+
+{% block headercontent %}
+<!-- <link href="{{ STATIC_URL }}css/message_list.css" rel="stylesheet" type="text/css"></link> -->
+{% endblock %}
+
+{% block extra_menus %}
+<a href="{% url 'folder_list' %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/folder.svg" width="32px" height="32px" title="{% trans "Folder List" %}">
+</a>
+<a href="{% url 'mailapp_send_message' %}">
+  <img class="top_menu_entry" src="{{ STATIC_URL }}img/mail-message-new.svg" width="32px" height="32px" title="{% trans "New Message" %}">
+</a>
+&nbsp;
+{% endblock %}
+
+{% block contents %}
+<form id="generate_ecc_key_form" method="post" action="{% url 'mailapp_generate_ecc_key' %}">
+    {% csrf_token %}
+    <div class="form_container">
+    {% for field in form %}
+        <div class="form_field" style="display: flex; flex-wrap: wrap;">
+            <div class="form_label" style="min-width: 300px">{{ field.label_tag }}</div>
+            <div class="form_value">
+                {{ field }}
+                <span style="color: red">{{ field.errors.0 }}</span>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    <input type="submit" name="generate" value="{% trans "Generate Key" %}" />
+    <input type="submit" name="download" value="{% trans "Download Generated Key" %}" />
+    <div>
+    {% if error_message != None %}
+        <span style="color: red">{{ error_message }}</span>      
+    {% endif %}
+    </div>
+</form>
+
+<div id="bottom_toolbar">
+    <div class="toolbar_left">
+        <input form="generate_ecc_key_form" type="submit" name="cancel" value="{% trans "Cancel" %}" formnovalidate />
+    </div>
+</div>
+{% endblock %}

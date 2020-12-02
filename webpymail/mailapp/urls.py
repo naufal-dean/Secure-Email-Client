@@ -27,6 +27,7 @@ from django.conf.urls import url
 
 from mailapp.views import folder, message_list, message, compose
 from mailapp.views.plugins import message as plugin_message
+from mailapp.views.plugins import genkey as plugin_genkey
 
 folder_pat = r'FOLDER_(?P<folder>[A-Za-z0-9+.&%_=-]+)'
 
@@ -67,6 +68,8 @@ urlpatterns += [
 urlpatterns += [
         url(r'^' + folder_pat + r'/(?P<uid>[\d]+)/process-mail/$',
             plugin_message.message_process, name='mailapp_message_process'),
+        url(r'^genkey$',
+            plugin_genkey.generate_ecc_key, name='mailapp_generate_ecc_key'),
         ]
 
 # Compose messages:
