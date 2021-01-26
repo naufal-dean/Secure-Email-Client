@@ -1,5 +1,8 @@
-# Kriptografi-Tubes-2
+# Secure Email Client
 # Penerapan Elliptic Curve Cryptography dan SHA-3 untuk Menandatangani Surel pada Perangkat Mobile
+
+## Description
+Secure Email Client is an email client based on [webpymail](https://gitlab.com/hgg/webpymail). This web app adds digital signature and encryption features. The digital signature is generated using Elliptic Curve Digital Signature Algorithm (ECDSA). The encryption is done using custom block cipher algorithm (STRAIT cipher).
 
 ## Identitas
 Muhammad Zunan Alfikri (13518019)\
